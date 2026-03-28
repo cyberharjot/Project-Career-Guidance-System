@@ -8,7 +8,9 @@
     <!-- CSS -->
     <link rel="stylesheet" href="css/style.css">
 
-    <!-- JS (future) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- JS  -->
     <script defer src="js/script.js"></script>
 </head>
 <body>
@@ -31,8 +33,8 @@
 
             <!-- MOBILE MENU -->
             <div class="menu-toggle" id="menuToggle">
-                ☰
-            </div>
+    <i data-lucide="menu" id="menuIcon"></i>
+</div>
 
         </nav>
     </header>
@@ -72,108 +74,130 @@
     </section>
 
 
-    <!-- ================= HOW ================= -->
-    <section class="how section" id="how">
+<!-- ===== HOW IT WORKS ===== -->
+<section class="section" id="how">
+    <h2 class="section-title">How It Works</h2>
 
-        <h2 class="section-title">How It Works</h2>
+    <div class="how-container">
 
-        <div class="how-container">
-
-            <div class="how-card">
-                <div class="icon">🧠</div>
-                <h3>Answer Questions</h3>
-                <p>Tell us your interests and preferences through AI-driven conversation.</p>
-            </div>
-
-            <div class="how-card">
-                <div class="icon">⚡</div>
-                <h3>AI Analysis</h3>
-                <p>Our AI analyzes your personality, skills, and goals intelligently.</p>
-            </div>
-
-            <div class="how-card">
-                <div class="icon">🚀</div>
-                <h3>Get Career Path</h3>
-                <p>Receive a personalized roadmap and career recommendations.</p>
-            </div>
-
+        <div class="how-card">
+            <div class="step">01</div>
+            <i data-lucide="message-square"></i>
+            <h3>Answer Questions</h3>
+            <p>Tell us your interests and preferences through an AI-driven conversation.</p>
         </div>
 
-    </section>
-
-
-    <!-- ================= FEATURES ================= -->
-    <section class="features section" id="features">
-
-        <h2 class="section-title">Key Features</h2>
-
-        <div class="features-container">
-
-            <div class="feature-card">
-                <h3>Personalized AI</h3>
-                <p>Dynamic recommendations based on real-time user input.</p>
-            </div>
-
-            <div class="feature-card">
-                <h3>Smart Conversations</h3>
-                <p>AI adapts questions based on your responses.</p>
-            </div>
-
-            <div class="feature-card">
-                <h3>Career Roadmaps</h3>
-                <p>Clear step-by-step guidance for your future.</p>
-            </div>
-
-            <div class="feature-card">
-                <h3>AI Chatbot</h3>
-                <p>Ask anything about careers instantly.</p>
-            </div>
-
-            <div class="feature-card">
-                <h3>Skill Analysis</h3>
-                <p>Understand your strengths and improve.</p>
-            </div>
-
-            <div class="feature-card">
-                <h3>Modern UI</h3>
-                <p>Clean, fast, and intuitive interface.</p>
-            </div>
-
+        <div class="how-card">
+            <div class="step">02</div>
+            <i data-lucide="brain"></i>
+            <h3>AI Analysis</h3>
+            <p>Our AI analyzes your personality, skills, and goals intelligently.</p>
         </div>
 
-    </section>
+        <div class="how-card">
+            <div class="step">03</div>
+            <i data-lucide="rocket"></i>
+            <h3>Get Career Path</h3>
+            <p>Receive a personalized roadmap and career recommendations.</p>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- ===== FEATURES ===== -->
+<section class="section" id="features">
+    <h2 class="section-title">Key Features</h2>
+
+    <div class="features-container">
+
+        <div class="feature-card">
+            <i data-lucide="sparkles"></i>
+            <h3>Personalized AI</h3>
+            <p>Dynamic recommendations based on real-time user input.</p>
+        </div>
+
+        <div class="feature-card">
+            <i data-lucide="cpu"></i>
+            <h3>Smart Conversations</h3>
+            <p>AI adapts questions based on your responses.</p>
+        </div>
+
+        <div class="feature-card">
+            <i data-lucide="map"></i>
+            <h3>Career Roadmaps</h3>
+            <p>Clear step-by-step guidance for your future.</p>
+        </div>
+
+        <div class="feature-card">
+            <i data-lucide="bot"></i>
+            <h3>AI Chatbot</h3>
+            <p>Ask anything about careers instantly.</p>
+        </div>
+
+        <div class="feature-card">
+            <i data-lucide="bar-chart"></i>
+            <h3>Skill Analysis</h3>
+            <p>Understand your strengths and improve.</p>
+        </div>
+
+    </div>
+</section>
 
 
     <!-- ================= ABOUT ================= -->
-    <section class="about section" id="about">
 
-        <h2 class="section-title">About FuturePath AI</h2>
+<section class="about section" id="about">
 
-        <div class="about-content">
+    <h2 class="section-title">About FuturePath AI</h2>
 
-            <p>
-                FuturePath AI is designed to eliminate confusion and guide
-                students toward the right career using artificial intelligence.
-            </p>
+    <p class="about-text">
+        Smart Career Guidance System is built to eliminate career confusion using intelligent AI guidance.
+        We help students discover the right path with personalized insights and smart recommendations.
+    </p>
 
-            <div class="team">
+    <!-- TEAM SECTION -->
+    <div class="team-container">
 
-                <h3>Our Team</h3>
-
-                <ul>
-                    <li>Harleen Kaur – Team Leader</li>
-                    <li>Harteek</li>
-                    <li>Harleen Singh</li>
-                    <li>Ashu David</li>
-                    <li>Harjot Singh</li>
-                </ul>
-
-            </div>
-
+        <div class="team-card">
+            <div class="avatar">HK</div>
+            <h3>Harleen Kaur</h3>
+            <p>Team Leader</p>
         </div>
 
-    </section>
+        <div class="team-card">
+            <div class="avatar">HT</div>
+            <h3>Harteek</h3>
+            <p>Developer</p>
+        </div>
 
+        <div class="team-card">
+            <div class="avatar">HS</div>
+            <h3>Harleen Singh</h3>
+            <p>Developer</p>
+        </div>
+
+        <div class="team-card">
+            <div class="avatar">AD</div>
+            <h3>Ashu David</h3>
+            <p>Developer</p>
+        </div>
+
+        <div class="team-card">
+            <div class="avatar">HJ</div>
+            <h3>Harjot Singh</h3>
+            <p>Developer</p>
+        </div>
+
+        <div class="team-card">
+            <div class="avatar">DR</div>
+            <h3>Dikshant Rana</h3>
+            <p>Developer</p>
+        </div>
+
+    </div>
+
+</section>
 
     <!-- ================= CONTACT ================= -->
     <section class="contact section" id="contact">
