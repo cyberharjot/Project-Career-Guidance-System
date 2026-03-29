@@ -10,38 +10,61 @@ document.addEventListener("DOMContentLoaded", () => {
     const toggle = document.getElementById("menuToggle");
     const nav = document.getElementById("navLinks");
 
-    if (!toggle || !nav) return;
-
     /* ===============================
-       MENU TOGGLE (FIXED)
+       MENU LOGIC (SAFE WRAPPED)
     ================================= */
-    toggle.addEventListener("click", (e) => {
-        e.stopPropagation();
+    if (toggle && nav) {
 
-        const isOpen = nav.classList.toggle("active");
+        toggle.addEventListener("click", (e) => {
+            e.stopPropagation();
 
-        let icon = toggle.querySelector("svg");
+            const isOpen = nav.classList.toggle("active");
 
-        // fallback if icon not found
-        if (!icon && typeof lucide !== "undefined") {
-            lucide.createIcons();
-            icon = toggle.querySelector("svg");
-        }
+            let icon = toggle.querySelector("svg");
 
-        if (icon) {
-            icon.setAttribute("data-lucide", isOpen ? "x" : "menu");
-            lucide.createIcons();
-        }
-    });
+            if (!icon && typeof lucide !== "undefined") {
+                lucide.createIcons();
+                icon = toggle.querySelector("svg");
+            }
 
-    /* ===============================
-       CLICK OUTSIDE TO CLOSE
-    ================================= */
-    document.addEventListener("click", (e) => {
+            if (icon) {
+                icon.setAttribute("data-lucide", isOpen ? "x" : "menu");
+                lucide.createIcons();
+            }
+        });
 
-        if (!nav.contains(e.target) && !toggle.contains(e.target)) {
+        /* CLICK OUTSIDE */
+        document.addEventListener("click", (e) => {
+            if (!nav.contains(e.target) && !toggle.contains(e.target)) {
 
-            if (nav.classList.contains("active")) {
+                if (nav.classList.contains("active")) {
+                    nav.classList.remove("active");
+
+                    let icon = toggle.querySelector("svg");
+
+                    if (icon) {
+                        icon.setAttribute("data-lucide", "menu");
+                        lucide.createIcons();
+                    }
+                }
+            }
+        });
+
+        /* NAV LINKS CLICK */
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', function(e) {
+
+                e.preventDefault();
+
+                const targetId = this.getAttribute('href');
+                const target = document.querySelector(targetId);
+
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+
                 nav.classList.remove("active");
 
                 let icon = toggle.querySelector("svg");
@@ -50,37 +73,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     icon.setAttribute("data-lucide", "menu");
                     lucide.createIcons();
                 }
-            }
-        }
-    });
-
-    /* ===============================
-       SMOOTH SCROLL + CLOSE MENU
-    ================================= */
-    document.querySelectorAll('.nav-links a').forEach(link => {
-        link.addEventListener('click', function(e) {
-
-            e.preventDefault();
-
-            const targetId = this.getAttribute('href');
-            const target = document.querySelector(targetId);
-
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth'
-                });
-            }
-
-            nav.classList.remove("active");
-
-            let icon = toggle.querySelector("svg");
-
-            if (icon) {
-                icon.setAttribute("data-lucide", "menu");
-                lucide.createIcons();
-            }
+            });
         });
-    });
+
+    }
 
     /* ===============================
        START BUTTON
@@ -94,26 +90,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* ===============================
-       SCROLL ANIMATION
+       SCROLL ANIMATIONS
     ================================= */
-    const observer = new IntersectionObserver(entries => {
+    const revealElements = document.querySelectorAll(".reveal");
+
+    const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.classList.add("show");
-            } else {
-                entry.target.classList.remove("show");
+                entry.target.classList.add("active");
+                observer.unobserve(entry.target); // smooth one-time animation
             }
         });
     }, {
-        threshold: 0.2
+        threshold: 0.15
     });
 
-    document.querySelectorAll(".hidden-anim").forEach(el => {
-        observer.observe(el);
-    });
+    revealElements.forEach(el => observer.observe(el));
 
 });
-
 
 /* ===============================
    NAVBAR SCROLL EFFECT

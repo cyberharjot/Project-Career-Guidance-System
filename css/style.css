@@ -103,7 +103,7 @@ body {
     height: 100%;
     background: url("../images/bg.jpg") no-repeat center/cover;
     z-index: -2;
-    opacity: 0.35;
+    opacity: 0.4;
     
 }
 
@@ -720,3 +720,55 @@ button {
 .from-right {
     transform: translateX(80px);
 }
+
+/* ================= SCROLL ANIMATIONS ================= */
+
+/* Base hidden state */
+
+.reveal {
+    opacity: 0;
+    transform: translateY(40px) scale(0.97);
+    filter: blur(6px);
+    transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+}
+
+/* LEFT */
+.reveal-left {
+    transform: translateX(-80px);
+}
+
+.reveal-left.active {
+    transform: translateX(0);
+}
+
+/* RIGHT */
+.reveal-right {
+    transform: translateX(80px);
+}
+
+.reveal-right.active {
+    transform: translateX(0);
+}
+
+/* ZOOM */
+.reveal-zoom {
+    transform: scale(0.85);
+}
+
+.reveal-zoom.active {
+    transform: scale(1);
+}
+
+/* STAGGER EFFECT */
+.reveal-delay-1 { transition-delay: 0.08s; }
+.reveal-delay-2 { transition-delay: 0.16s; }
+.reveal-delay-3 { transition-delay: 0.24s; }
+.reveal-delay-4 { transition-delay: 0.32s; }
+.reveal-delay-5 { transition-delay: 0.40s; }
+.reveal-delay-6 { transition-delay: 0.48s; }
