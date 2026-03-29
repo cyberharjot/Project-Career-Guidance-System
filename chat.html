@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FuturePath AI Chat</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/chat.css">
+    <script defer src="js/chat.js"></script>
+</head>
+<body>
+
+    <!-- LOADER -->
+    <div class="loader" id="loader" aria-hidden="true">
+        <div class="loader-card">
+            <div class="spinner"></div>
+            <div class="loader-text">
+                <strong>FuturePath AI</strong>
+                <span>Preparing your career session...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- BACKDROP -->
+    <div class="backdrop" id="backdrop"></div>
+
+    <div class="app-shell">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar" aria-label="Chat history sidebar">
+            <div class="sidebar-header">
+                <div>
+                    <div class="brand">FuturePath AI</div>
+                    <div class="brand-sub">Career Chats</div>
+                </div>
+
+                <button class="icon-btn" id="closeSidebar" aria-label="Close sidebar">
+                    ✕
+                </button>
+            </div>
+
+            <button class="new-chat-btn" id="newChatBtn">
+                + New chat
+            </button>
+
+            <div class="sidebar-section-title">Conversations</div>
+            <div class="chat-list" id="chatList"></div>
+
+            <div class="sidebar-footer">
+                Saved locally for now. Later this will connect to login and database.
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main" id="main">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="icon-btn menu-btn" id="openSidebar" aria-label="Open sidebar">
+                        ☰
+                    </button>
+
+                    <div class="title-wrap">
+                        <h1>FuturePath AI</h1>
+                        <p>AI career guidance assistant</p>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <button class="ghost-btn" id="clearChat">Clear chat</button>
+                </div>
+            </header>
+
+            <section class="chat-stage">
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-card">
+                        <h2>Let’s find your best career path</h2>
+                        <p>
+                            Tell me what you enjoy, what you are good at, and what kind of work feels exciting.
+                            I will keep asking the right follow-up questions.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="messages" id="chatBox" aria-live="polite"></div>
+            </section>
+
+            <footer class="composer">
+                <div class="composer-inner">
+                    <textarea
+                        id="userInput"
+                        rows="1"
+                        placeholder="Type your answer...">
+                    </textarea>
+
+                    <button id="sendBtn" class="send-btn" aria-label="Send message">
+                        ➤
+                    </button>
+                </div>
+
+                <div class="composer-note">
+                    Enter to send · Shift + Enter for a new line
+                </div>
+            </footer>
+        </main>
+    </div>
+
+</body>
+</html>
