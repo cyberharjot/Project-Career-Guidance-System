@@ -211,11 +211,12 @@ function scrollToBottom(smooth = true) {
 ========================= */
 function appendMessageToDOM(message, animate = true) {
     const wrap = document.createElement("div");
-    wrap.className = `message ${message.role}`;
+    const visualRole = message.role === "assistant" ? "bot" : message.role;
+    wrap.className = `message ${visualRole}`;
 
     const meta = document.createElement("div");
     meta.className = "message-meta";
-    meta.textContent = message.role === "user" ? "You" : "FuturePath AI";
+    meta.textContent = visualRole === "user" ? "You" : "FuturePath AI";
 
     const bubble = document.createElement("div");
     bubble.className = "bubble";
@@ -294,41 +295,6 @@ function hideTyping() {
 }
 
 /* =========================
-   DYNAMIC DEMO REPLIES
-========================= */
-function buildBotReply(userText) {
-    const chat = getCurrentChat();
-    const userMessages = chat ? chat.messages.filter(m => m.role === "user") : [];
-    const lower = userText.toLowerCase();
-
-    if (userMessages.length === 1) {
-        return "Nice. What subjects or activities do you enjoy the most?";
-    }
-
-    if (/(code|coding|programming|software|website|app|computer|tech)/.test(lower)) {
-        return "That sounds tech-oriented. Do you enjoy building, designing, or solving problems with code?";
-    }
-
-    if (/(design|art|creative|editing|graphics|ui|ux)/.test(lower)) {
-        return "Great — creative work fits well here. Do you prefer visual design, content creation, or user experience?";
-    }
-
-    if (/(business|marketing|sales|startup|management)/.test(lower)) {
-        return "Interesting. Do you like working with people, strategy, or growth/marketing ideas?";
-    }
-
-    if (/(science|math|biology|physics|chemistry)/.test(lower)) {
-        return "Good to know. Which of these feels stronger to you: research, analysis, or practical problem solving?";
-    }
-
-    if (userMessages.length < 5) {
-        return "Got it. Tell me about your strengths, favorite subjects, and the kind of work environment you prefer.";
-    }
-
-    return "I’m starting to see a direction. Share any skills, hobbies, or career goals you have, and I’ll narrow it down further.";
-}
-
-/* =========================
    SEND MESSAGE
 ========================= */
 function sendMessage() {
@@ -342,14 +308,42 @@ function sendMessage() {
     sendBtn.disabled = true;
     showTyping();
 
-    const replyDelay = Math.max(550, Math.min(1200, 500 + text.length * 9));
-
     setTimeout(() => {
-        hideTyping();
-        const reply = buildBotReply(text);
-        addMessage("bot", reply, true);
-        sendBtn.disabled = false;
-    }, replyDelay);
+        fetch("http://127.0.0.1:5000/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                message: text,
+                history: getCurrentChat().messages
+                    .slice(0, -1)
+                    .filter(m => m.role === "user" || m.role === "bot" || m.role === "assistant")
+                    .map(m => ({
+                        role: m.role === "bot" ? "assistant" : m.role,
+                        content: m.text
+                    }))
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            hideTyping();
+
+            if (data.reply) {
+                addMessage("bot", data.reply, true);
+            } else {
+                addMessage("bot", "I could not generate a reply.", true);
+            }
+
+            sendBtn.disabled = false;
+        })
+        .catch(() => {
+            hideTyping();
+            addMessage("bot", "Backend connection failed. Check Flask server.", true);
+            sendBtn.disabled = false;
+        });
+    }, 500);
 }
 
 /* =========================
