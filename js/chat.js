@@ -11,23 +11,41 @@ const emptyState = document.getElementById("emptyState");
 const input = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendBtn");
 const clearBtn = document.getElementById("clearChat");
+const quickChips = document.querySelectorAll(".quick-chip");
 
 const STORAGE_KEY = "fpa_chats_v1";
 const CURRENT_KEY = "fpa_current_chat_v1";
 const USER_ID_KEY = "fpa_user_id_v1";
 
-/* =========================
-   USER ID (future-ready)
-========================= */
+const isMobile = () => window.matchMedia("(max-width: 900px)").matches;
+
+function setAppHeight() {
+    const height = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    document.documentElement.style.setProperty("--app-height", `${height}px`);
+}
+
+setAppHeight();
+
+if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", setAppHeight);
+    window.visualViewport.addEventListener("scroll", setAppHeight);
+}
+
+window.addEventListener("resize", setAppHeight);
+window.addEventListener("orientationchange", setAppHeight);
+window.addEventListener("focusin", setAppHeight);
+window.addEventListener("focusout", () => {
+    setTimeout(setAppHeight, 60);
+});
+
+/* USER ID */
 let userId = localStorage.getItem(USER_ID_KEY);
 if (!userId) {
     userId = "user_" + Date.now();
     localStorage.setItem(USER_ID_KEY, userId);
 }
 
-/* =========================
-   STORAGE HELPERS
-========================= */
+/* STORAGE */
 function loadChats() {
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -50,11 +68,19 @@ function setCurrentChatId(id) {
     localStorage.setItem(CURRENT_KEY, id);
 }
 
-/* =========================
-   CHAT STATE
-========================= */
+/* STATE */
 let chats = loadChats();
 let currentChatId = getCurrentChatId();
+
+function createChat(title = "New Chat") {
+    return {
+        id: "chat_" + Date.now() + "_" + Math.random().toString(16).slice(2),
+        title,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        messages: []
+    };
+}
 
 if (!chats.length) {
     const firstChat = createChat("New Chat");
@@ -67,16 +93,6 @@ if (!chats.length) {
 if (!currentChatId || !chats.some(chat => chat.id === currentChatId)) {
     currentChatId = chats[0].id;
     setCurrentChatId(currentChatId);
-}
-
-function createChat(title = "New Chat") {
-    return {
-        id: "chat_" + Date.now() + "_" + Math.random().toString(16).slice(2),
-        title,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-        messages: []
-    };
 }
 
 function getCurrentChat() {
@@ -98,7 +114,7 @@ function formatTime(ts) {
 }
 
 function escapeHtml(text) {
-    return text
+    return String(text)
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
@@ -106,109 +122,84 @@ function escapeHtml(text) {
         .replaceAll("'", "&#39;");
 }
 
-/* =========================
-   LOADER
-========================= */
+function setIcons() {
+    if (typeof lucide !== "undefined") {
+        lucide.createIcons();
+    }
+}
+
+/* LOADER */
 window.addEventListener("load", () => {
     setTimeout(() => {
         if (loader) loader.classList.add("hide");
-    }, 550);
+    }, 500);
 });
 
-/* =========================
-   SIDEBAR TOGGLE
-========================= */
+/* SIDEBAR BEHAVIOR */
 function openSidebar() {
-    document.body.classList.add("sidebar-open");
+    if (isMobile()) {
+        document.body.classList.add("sidebar-open");
+    } else {
+        document.body.classList.remove("sidebar-collapsed");
+    }
 }
 
 function closeSidebar() {
-    document.body.classList.remove("sidebar-open");
+    if (isMobile()) {
+        document.body.classList.remove("sidebar-open");
+    } else {
+        document.body.classList.add("sidebar-collapsed");
+    }
 }
 
-openSidebarBtn.addEventListener("click", openSidebar);
+function toggleSidebar() {
+    if (isMobile()) {
+        document.body.classList.toggle("sidebar-open");
+    } else {
+        document.body.classList.toggle("sidebar-collapsed");
+    }
+}
+
+openSidebarBtn.addEventListener("click", toggleSidebar);
 closeSidebarBtn.addEventListener("click", closeSidebar);
 backdrop.addEventListener("click", closeSidebar);
 
 document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeSidebar();
+    if (e.key === "Escape") {
+        closeSidebar();
+    }
 });
 
-/* =========================
-   CHAT RENDERING
-========================= */
+/* RENDER */
 function renderSidebar() {
     chatList.innerHTML = "";
 
-    chats
-        .sort((a, b) => b.updatedAt - a.updatedAt)
-        .forEach(chat => {
-            const item = document.createElement("button");
-            item.type = "button";
-            item.className = `chat-item${chat.id === currentChatId ? " active" : ""}`;
+    const ordered = [...chats].sort((a, b) => b.updatedAt - a.updatedAt);
 
-            item.innerHTML = `
-                <div class="chat-item-title">${escapeHtml(chat.title)}</div>
-                <div class="chat-item-meta">
-                    <span class="chat-item-preview">${escapeHtml(getPreview(chat))}</span>
-                    <span class="chat-item-time">${formatTime(chat.updatedAt)}</span>
-                </div>
-            `;
+    ordered.forEach(chat => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = `chat-item${chat.id === currentChatId ? " active" : ""}`;
 
-            item.addEventListener("click", () => {
-                currentChatId = chat.id;
-                setCurrentChatId(currentChatId);
-                renderAll();
-                if (window.innerWidth <= 900) closeSidebar();
-            });
+        item.innerHTML = `
+            <div class="chat-item-title">${escapeHtml(chat.title)}</div>
+            <div class="chat-item-meta">
+                <span class="chat-item-preview">${escapeHtml(getPreview(chat))}</span>
+                <span class="chat-item-time">${formatTime(chat.updatedAt)}</span>
+            </div>
+        `;
 
-            chatList.appendChild(item);
+        item.addEventListener("click", () => {
+            currentChatId = chat.id;
+            setCurrentChatId(currentChatId);
+            renderAll();
+            if (isMobile()) closeSidebar();
         });
-}
 
-function renderMessages() {
-    const chat = getCurrentChat();
-    if (!chat) return;
-
-    chatBox.innerHTML = "";
-
-    if (!chat.messages.length) {
-        emptyState.style.display = "block";
-        scrollToBottom(false);
-        return;
-    }
-
-    emptyState.style.display = "none";
-
-    chat.messages.forEach(message => {
-        appendMessageToDOM(message, false);
-    });
-
-    scrollToBottom(false);
-}
-
-function renderAll() {
-    renderSidebar();
-    renderMessages();
-}
-
-/* =========================
-   SCROLL
-========================= */
-function scrollToBottom(smooth = true) {
-    if (!chatStage) return;
-
-    requestAnimationFrame(() => {
-        chatStage.scrollTo({
-            top: chatStage.scrollHeight,
-            behavior: smooth ? "smooth" : "auto"
-        });
+        chatList.appendChild(item);
     });
 }
 
-/* =========================
-   MESSAGE DOM
-========================= */
 function appendMessageToDOM(message, animate = true) {
     const wrap = document.createElement("div");
     const visualRole = message.role === "assistant" ? "bot" : message.role;
@@ -237,6 +228,41 @@ function appendMessageToDOM(message, animate = true) {
     scrollToBottom(true);
 }
 
+function renderMessages() {
+    const chat = getCurrentChat();
+    if (!chat) return;
+
+    chatBox.innerHTML = "";
+
+    if (!chat.messages.length) {
+        emptyState.style.display = "block";
+        scrollToBottom(false);
+        return;
+    }
+
+    emptyState.style.display = "none";
+    chat.messages.forEach(message => appendMessageToDOM(message, false));
+    scrollToBottom(false);
+}
+
+function renderAll() {
+    renderSidebar();
+    renderMessages();
+}
+
+/* SCROLL */
+function scrollToBottom(smooth = true) {
+    if (!chatStage) return;
+
+    requestAnimationFrame(() => {
+        chatStage.scrollTo({
+            top: chatStage.scrollHeight,
+            behavior: smooth ? "smooth" : "auto"
+        });
+    });
+}
+
+/* MESSAGES */
 function addMessage(role, text, save = true) {
     const chat = getCurrentChat();
     if (!chat) return;
@@ -261,9 +287,6 @@ function addMessage(role, text, save = true) {
     renderSidebar();
 }
 
-/* =========================
-   TYPING INDICATOR
-========================= */
 let typingNode = null;
 
 function showTyping() {
@@ -294,10 +317,13 @@ function hideTyping() {
     }
 }
 
-/* =========================
-   SEND MESSAGE
-========================= */
-function sendMessage() {
+/* COMPOSE */
+function autoResizeTextarea() {
+    input.style.height = "auto";
+    input.style.height = Math.min(input.scrollHeight, 168) + "px";
+}
+
+async function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
 
@@ -308,8 +334,8 @@ function sendMessage() {
     sendBtn.disabled = true;
     showTyping();
 
-    setTimeout(() => {
-        fetch("http://127.0.0.1:5000/chat", {
+    try {
+        const response = await fetch("http://127.0.0.1:5000/chat", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -325,30 +351,25 @@ function sendMessage() {
                         content: m.text
                     }))
             })
-        })
-        .then(res => res.json())
-        .then(data => {
-            hideTyping();
-
-            if (data.reply) {
-                addMessage("bot", data.reply, true);
-            } else {
-                addMessage("bot", "I could not generate a reply.", true);
-            }
-
-            sendBtn.disabled = false;
-        })
-        .catch(() => {
-            hideTyping();
-            addMessage("bot", "Backend connection failed. Check Flask server.", true);
-            sendBtn.disabled = false;
         });
-    }, 500);
+
+        const data = await response.json();
+
+        hideTyping();
+
+        if (data.reply) {
+            addMessage("bot", data.reply, true);
+        } else {
+            addMessage("bot", "I could not generate a reply.", true);
+        }
+    } catch {
+        hideTyping();
+        addMessage("bot", "Backend connection failed. Check Flask server.", true);
+    } finally {
+        sendBtn.disabled = false;
+    }
 }
 
-/* =========================
-   CHAT ACTIONS
-========================= */
 function createAndSwitchChat() {
     const newChat = createChat("New Chat");
     chats.unshift(newChat);
@@ -359,21 +380,21 @@ function createAndSwitchChat() {
     renderAll();
     input.value = "";
     autoResizeTextarea();
-    closeSidebar();
-    input.focus();
+    input.focus({ preventScroll: true });
+    scrollToBottom(false);
 }
 
-/* =========================
-   TEXTAREA AUTO-RESIZE
-========================= */
-function autoResizeTextarea() {
-    input.style.height = "auto";
-    input.style.height = Math.min(input.scrollHeight, 160) + "px";
+function initSidebarState() {
+    if (isMobile()) {
+        document.body.classList.remove("sidebar-collapsed");
+        document.body.classList.remove("sidebar-open");
+    } else {
+        document.body.classList.remove("sidebar-open");
+        document.body.classList.remove("sidebar-collapsed");
+    }
 }
 
-/* =========================
-   EVENTS
-========================= */
+/* EVENTS */
 sendBtn.addEventListener("click", sendMessage);
 
 input.addEventListener("input", autoResizeTextarea);
@@ -404,18 +425,35 @@ clearBtn.addEventListener("click", () => {
     scrollToBottom(false);
 });
 
-window.addEventListener("resize", () => {
-    if (window.innerWidth > 900) {
-        document.body.classList.remove("sidebar-open");
-    }
+quickChips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+        const prompt = chip.getAttribute("data-prompt") || "";
+        input.value = prompt;
+        autoResizeTextarea();
+        input.focus({ preventScroll: true });
+        scrollToBottom(false);
+    });
 });
 
-/* =========================
-   INITIAL SETUP
-========================= */
+window.addEventListener("resize", () => {
+    setAppHeight();
+    initSidebarState();
+});
+
+window.addEventListener("orientationchange", () => {
+    setAppHeight();
+    initSidebarState();
+});
+
+window.addEventListener("beforeunload", () => {
+    saveChats(chats);
+});
+
+/* INIT */
 function init() {
+    setIcons();
+    initSidebarState();
     renderAll();
-    emptyState.style.display = getCurrentChat().messages.length ? "none" : "block";
     autoResizeTextarea();
 
     if (!getCurrentChat().messages.length) {
