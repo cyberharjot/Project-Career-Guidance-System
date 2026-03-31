@@ -1,231 +1,265 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#020617" />
     <title>Smart Career Guidance System</title>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
+    <link rel="stylesheet" href="css/style.css" />
     <script src="https://unpkg.com/lucide@latest"></script>
-
-    <!-- JS  -->
     <script defer src="js/script.js"></script>
 </head>
 <body>
 
-    <!-- ================= NAVBAR ================= -->
+    <div class="scroll-progress" aria-hidden="true">
+        <span></span>
+    </div>
+
     <header class="header">
         <nav class="navbar">
-
-            <div class="logo">
+            <a class="logo" href="#home" aria-label="FuturePath AI home">
                 FuturePath <span>AI</span>
-            </div>
+            </a>
 
             <ul class="nav-links" id="navLinks">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#how">How It Works</a></li>
-                <li><a href="#features">Features</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a href="#home" class="nav-link active">Home</a></li>
+                <li><a href="#how" class="nav-link">How It Works</a></li>
+                <li><a href="#features" class="nav-link">Features</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
             </ul>
 
-            <!-- MOBILE MENU -->
-            <div class="menu-toggle" id="menuToggle">
-                <i data-lucide="menu" id="menuIcon"></i>
-            </div>
-
+            <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
+                <i data-lucide="menu"></i>
+            </button>
         </nav>
     </header>
 
+    <div class="mobile-overlay" id="mobileOverlay"></div>
 
-    <!-- ================= HERO ================= -->
-    <section class="hero" id="home">
+    <main>
+        <section class="hero" id="home">
+            <div class="hero-bg"></div>
+            <div class="hero-overlay"></div>
+            <div class="hero-grid"></div>
 
-        <div class="hero-bg"></div>
-        <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <div class="hero-badge reveal">
+                    <i data-lucide="sparkles"></i>
+                    AI-Powered Career Discovery
+                </div>
 
-        <div class="hero-content">
+                <h1 class="hero-title reveal reveal-delay-1">
+                    Smart Career Guidance System
+                </h1>
 
-            <h1 class="hero-title reveal">
-                Smart Career Guidance System
-            </h1>
+                <p class="hero-text reveal reveal-delay-2">
+                    Discover your future with AI-powered career guidance.
+                    Personalized insights. Dynamic conversations. Real results.
+                </p>
 
-            <p class="hero-text reveal reveal-delay-1">
-                Discover your future with AI-powered career guidance.
-                Personalized insights. Dynamic conversations. Real results.
-            </p>
+                <div class="hero-buttons reveal reveal-delay-3">
+                    <button class="cta-btn" id="startBtn">
+                        <span>Start Counseling</span>
+                        <i data-lucide="arrow-right"></i>
+                    </button>
 
-            <div class="hero-buttons reveal reveal-delay-2">
-                <button class="cta-btn" id="startBtn">
-                    Start Counseling
-                </button>
-
-                <button class="secondary-btn">
-                    Explore Features
-                </button>
+                    <button class="secondary-btn" id="featuresBtn">
+                        <span>Explore Features</span>
+                        <i data-lucide="layers-3"></i>
+                    </button>
+                </div>
             </div>
 
-        </div>
+            <div class="hero-stats reveal reveal-delay-4" aria-label="Highlights">
+                <div class="stat-card">
+                    <strong>AI</strong>
+                    <span>Smart guidance</span>
+                </div>
+                <div class="stat-card">
+                    <strong>24/7</strong>
+                    <span>Always available</span>
+                </div>
+                <div class="stat-card">
+                    <strong>100%</strong>
+                    <span>Personalized flow</span>
+                </div>
+            </div>
+        </section>
 
-    </section>
+        <section class="section" id="how">
+            <div class="section-heading">
+                <h2 class="section-title reveal">How It Works</h2>
+                <p class="section-subtitle reveal reveal-delay-1">
+                    A simple journey from conversation to a personalized career path.
+                </p>
+            </div>
 
+            <div class="how-container">
+                <article class="how-card reveal reveal-delay-1">
+                    <div class="step">01</div>
+                    <div class="card-icon"><i data-lucide="message-square"></i></div>
+                    <h3>Answer Questions</h3>
+                    <p>Tell us your interests and preferences through an AI-driven conversation.</p>
+                </article>
 
-<!-- ===== HOW IT WORKS ===== -->
-<section class="section" id="how">
-    <h2 class="section-title reveal">How It Works</h2>
+                <article class="how-card reveal reveal-delay-2">
+                    <div class="step">02</div>
+                    <div class="card-icon"><i data-lucide="brain"></i></div>
+                    <h3>AI Analysis</h3>
+                    <p>Our AI analyzes your personality, skills, and goals intelligently.</p>
+                </article>
 
-    <div class="how-container">
+                <article class="how-card reveal reveal-delay-3">
+                    <div class="step">03</div>
+                    <div class="card-icon"><i data-lucide="rocket"></i></div>
+                    <h3>Get Career Path</h3>
+                    <p>Receive a personalized roadmap and career recommendations.</p>
+                </article>
+            </div>
+        </section>
 
-        <div class="how-card reveal reveal-delay-1">
-            <div class="step">01</div>
-            <i data-lucide="message-square"></i>
-            <h3>Answer Questions</h3>
-            <p>Tell us your interests and preferences through an AI-driven conversation.</p>
-        </div>
+        <section class="section" id="features">
+            <div class="section-heading">
+                <h2 class="section-title reveal">Key Features</h2>
+                <p class="section-subtitle reveal reveal-delay-1">
+                    Built to feel modern, fast, and genuinely useful.
+                </p>
+            </div>
 
-        <div class="how-card reveal reveal-delay-2">
-            <div class="step">02</div>
-            <i data-lucide="brain"></i>
-            <h3>AI Analysis</h3>
-            <p>Our AI analyzes your personality, skills, and goals intelligently.</p>
-        </div>
+            <div class="features-container">
+                <article class="feature-card reveal reveal-delay-1">
+                    <div class="card-icon"><i data-lucide="sparkles"></i></div>
+                    <h3>Personalized AI</h3>
+                    <p>Dynamic recommendations based on real-time user input.</p>
+                </article>
 
-        <div class="how-card reveal reveal-delay-3">
-            <div class="step">03</div>
-            <i data-lucide="rocket"></i>
-            <h3>Get Career Path</h3>
-            <p>Receive a personalized roadmap and career recommendations.</p>
-        </div>
+                <article class="feature-card reveal reveal-delay-2">
+                    <div class="card-icon"><i data-lucide="cpu"></i></div>
+                    <h3>Smart Conversations</h3>
+                    <p>AI adapts questions based on your responses.</p>
+                </article>
 
-    </div>
-</section>
+                <article class="feature-card reveal reveal-delay-3">
+                    <div class="card-icon"><i data-lucide="map"></i></div>
+                    <h3>Career Roadmaps</h3>
+                    <p>Clear step-by-step guidance for your future.</p>
+                </article>
 
+                <article class="feature-card reveal reveal-delay-4">
+                    <div class="card-icon"><i data-lucide="bot"></i></div>
+                    <h3>AI Chatbot</h3>
+                    <p>Ask anything about careers instantly.</p>
+                </article>
 
-<!-- ===== FEATURES ===== -->
-<section class="section" id="features">
-    <h2 class="section-title reveal">Key Features</h2>
+                <article class="feature-card reveal reveal-delay-5">
+                    <div class="card-icon"><i data-lucide="bar-chart-3"></i></div>
+                    <h3>Skill Analysis</h3>
+                    <p>Understand your strengths and improve.</p>
+                </article>
+            </div>
+        </section>
 
-    <div class="features-container">
+        <section class="about section" id="about">
+            <div class="section-heading">
+                <h2 class="section-title reveal">About FuturePath AI</h2>
+                <p class="section-subtitle reveal reveal-delay-1">
+                    Designed to reduce career confusion with intelligent guidance.
+                </p>
+            </div>
 
-        <div class="feature-card reveal reveal-delay-1">
-            <i data-lucide="sparkles"></i>
-            <h3>Personalized AI</h3>
-            <p>Dynamic recommendations based on real-time user input.</p>
-        </div>
+            <p class="about-text reveal reveal-delay-1">
+                Smart Career Guidance System is built to eliminate career confusion using intelligent AI guidance.
+                We help students discover the right path with personalized insights and smart recommendations.
+            </p>
 
-        <div class="feature-card reveal reveal-delay-2">
-            <i data-lucide="cpu"></i>
-            <h3>Smart Conversations</h3>
-            <p>AI adapts questions based on your responses.</p>
-        </div>
+            <div class="team-container">
+                <article class="team-card reveal reveal-delay-1">
+                    <div class="avatar">HK</div>
+                    <h3>Harleen Kaur</h3>
+                    <p>Team Leader</p>
+                </article>
 
-        <div class="feature-card reveal reveal-delay-3">
-            <i data-lucide="map"></i>
-            <h3>Career Roadmaps</h3>
-            <p>Clear step-by-step guidance for your future.</p>
-        </div>
+                <article class="team-card reveal reveal-delay-2">
+                    <div class="avatar">HT</div>
+                    <h3>Harteek</h3>
+                    <p>Developer</p>
+                </article>
 
-        <div class="feature-card reveal reveal-delay-4">
-            <i data-lucide="bot"></i>
-            <h3>AI Chatbot</h3>
-            <p>Ask anything about careers instantly.</p>
-        </div>
+                <article class="team-card reveal reveal-delay-4">
+                    <div class="avatar">AD</div>
+                    <h3>Ashu David</h3>
+                    <p>Developer</p>
+                </article>
 
-        <div class="feature-card reveal reveal-delay-5">
-            <i data-lucide="bar-chart"></i>
-            <h3>Skill Analysis</h3>
-            <p>Understand your strengths and improve.</p>
-        </div>
+                <article class="team-card reveal reveal-delay-5">
+                    <div class="avatar">HJ</div>
+                    <h3>Harjot Singh</h3>
+                    <p>Developer</p>
+                </article>
 
-    </div>
-</section>
+                <article class="team-card reveal reveal-delay-6">
+                    <div class="avatar">DR</div>
+                    <h3>Dikshant Rana</h3>
+                    <p>Developer</p>
+                </article>
+            </div>
+        </section>
 
+        <section class="contact section" id="contact">
+            <div class="section-heading">
+                <h2 class="section-title reveal">Contact Us</h2>
+                <p class="section-subtitle reveal reveal-delay-1">
+                    Reach out anytime for help, feedback, or collaboration.
+                </p>
+            </div>
 
-<!-- ================= ABOUT ================= -->
-<section class="about section" id="about">
+            <div class="contact-container">
+                <form class="contact-form reveal" id="contactForm">
+                    <input type="text" placeholder="Your Name" required />
+                    <input type="email" placeholder="Your Email" required />
+                    <textarea placeholder="Your Message" required></textarea>
+                    <button type="submit">
+                        <span>Send Message</span>
+                        <i data-lucide="send"></i>
+                    </button>
+                </form>
 
-    <h2 class="section-title reveal">About FuturePath AI</h2>
+                <div class="contact-info reveal reveal-delay-1">
+                    <h3>Get in Touch</h3>
 
-    <p class="about-text reveal reveal-delay-1">
-        Smart Career Guidance System is built to eliminate career confusion using intelligent AI guidance.
-        We help students discover the right path with personalized insights and smart recommendations.
-    </p>
+                    <div class="info-item">
+                        <i data-lucide="mail"></i>
+                        <p>futurepathai@gmail.com</p>
+                    </div>
 
-    <div class="team-container">
+                    <div class="info-item">
+                        <i data-lucide="phone"></i>
+                        <p>+91 XXXXX XXXXX</p>
+                    </div>
 
-        <div class="team-card reveal reveal-delay-1">
-            <div class="avatar">HK</div>
-            <h3>Harleen Kaur</h3>
-            <p>Team Leader</p>
-        </div>
+                    <div class="info-item">
+                        <i data-lucide="map-pin"></i>
+                        <p>Punjab, India</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
-        <div class="team-card reveal reveal-delay-2">
-            <div class="avatar">HT</div>
-            <h3>Harteek</h3>
-            <p>Developer</p>
-        </div>
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+        <i data-lucide="arrow-up"></i>
+    </button>
 
-        <div class="team-card reveal reveal-delay-3">
-            <div class="avatar">HS</div>
-            <h3>Harleen Singh</h3>
-            <p>Developer</p>
-        </div>
+    <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
-        <div class="team-card reveal reveal-delay-4">
-            <div class="avatar">AD</div>
-            <h3>Ashu David</h3>
-            <p>Developer</p>
-        </div>
-
-        <div class="team-card reveal reveal-delay-5">
-            <div class="avatar">HJ</div>
-            <h3>Harjot Singh</h3>
-            <p>Developer</p>
-        </div>
-
-        <div class="team-card reveal reveal-delay-6">
-            <div class="avatar">DR</div>
-            <h3>Dikshant Rana</h3>
-            <p>Developer</p>
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ================= CONTACT ================= -->
-<section class="contact section" id="contact">
-
-    <h2 class="section-title reveal">Contact Us</h2>
-
-    <div class="contact-container">
-
-        <form class="contact-form reveal">
-            <input type="text" placeholder="Your Name" required>
-            <input type="email" placeholder="Your Email" required>
-            <textarea placeholder="Your Message" required></textarea>
-            <button type="submit">Send Message</button>
-        </form>
-
-        <div class="contact-info reveal reveal-delay-1">
-            <h3>Get in Touch</h3>
-            <p>Email: futurepathai@gmail.com</p>
-            <p>Phone: +91 XXXXX XXXXX</p>
-            <p>Location: Punjab, India</p>
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ================= FOOTER ================= -->
-<footer class="footer">
-    <p>© 2026 FuturePath AI. All rights reserved.</p>
-</footer>
-
+    <footer class="footer">
+        <p>© <span id="currentYear">2026</span> FuturePath AI. All rights reserved.</p>
+    </footer>
 </body>
 </html>
