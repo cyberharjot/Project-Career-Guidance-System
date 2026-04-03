@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FuturePath AI | Assessment</title>
+  <style>
+    :root {
+      --bg: #070b17;
+      --panel: rgba(15, 20, 40, 0.82);
+      --panel-2: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.09);
+      --text: #edf1ff;
+      --muted: #aab3d6;
+      --accent: #7c5cff;
+      --accent-2: #22c55e;
+      --shadow: 0 22px 80px rgba(0, 0, 0, 0.38);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --transition: 200ms ease;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(124, 92, 255, 0.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(34, 197, 94, 0.10), transparent 24%),
+        linear-gradient(180deg, #050714 0%, #070b17 100%);
+      color: var(--text);
+    }
+
+    .page {
+      min-height: 100vh;
+      padding: 24px;
+      display: grid;
+      place-items: center;
+    }
+
+    .container {
+      width: min(920px, 100%);
+    }
+
+    .hero {
+      margin-bottom: 18px;
+      padding: 18px 6px 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(124, 92, 255, 0.14);
+      color: #ddd6ff;
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .badge .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 7px rgba(124, 92, 255, 0.14);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p {
+      margin: 12px 0 0;
+      max-width: 72ch;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 1rem;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+    }
+
+    .topline {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .topline .meta {
+      color: #cfd6ff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+
+    .topline h2 {
+      margin: 0;
+      font-size: clamp(1.35rem, 2.4vw, 2rem);
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+    }
+
+    .topline .desc {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 68ch;
+    }
+
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0 18px;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), #9f7bff);
+      transition: width var(--transition);
+    }
+
+    .progress-text {
+      min-width: 56px;
+      text-align: right;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .question-shell {
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.035);
+      padding: 22px;
+      min-height: 330px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .question-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .step-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(124, 92, 255, 0.14);
+      color: #e3dbff;
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .question-title {
+      margin: 0;
+      font-size: clamp(1.2rem, 2.1vw, 1.55rem);
+      line-height: 1.35;
+      letter-spacing: -0.02em;
+    }
+
+    .question-help {
+      margin: -6px 0 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 0.96rem;
+    }
+
+    .options {
+      display: grid;
+      gap: 12px;
+    }
+
+    .option-btn {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+      border-radius: var(--radius-md);
+      padding: 15px 16px;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.98rem;
+      line-height: 1.45;
+      transition: transform var(--transition), background var(--transition), border-color var(--transition);
+    }
+
+    .option-btn:hover,
+    .option-btn:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(124, 92, 255, 0.55);
+      background: rgba(124, 92, 255, 0.12);
+      outline: none;
+    }
+
+    .option-btn.selected {
+      border-color: rgba(124, 92, 255, 0.9);
+      background: rgba(124, 92, 255, 0.17);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chip {
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      padding: 11px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.94rem;
+      transition: background var(--transition), border-color var(--transition), transform var(--transition);
+    }
+
+    .chip:hover,
+    .chip:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(124, 92, 255, 0.55);
+      background: rgba(124, 92, 255, 0.12);
+      outline: none;
+    }
+
+    .chip.selected {
+      border-color: rgba(124, 92, 255, 0.9);
+      background: rgba(124, 92, 255, 0.18);
+    }
+
+    .multi-note {
+      margin: -2px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .other-wrap {
+      display: none;
+      margin-top: 6px;
+    }
+
+    .other-wrap.show {
+      display: block;
+    }
+
+    .other-input {
+      width: 100%;
+      padding: 15px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      background: rgba(8, 12, 28, 0.68);
+      color: var(--text);
+      font: inherit;
+      outline: none;
+      transition: border-color var(--transition), background var(--transition);
+    }
+
+    .other-input:focus {
+      border-color: rgba(124, 92, 255, 0.75);
+      background: rgba(10, 16, 36, 0.84);
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-top: auto;
+      padding-top: 4px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform var(--transition), opacity var(--transition), background var(--transition);
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #9f7bff);
+      color: white;
+      box-shadow: 0 14px 30px rgba(124, 92, 255, 0.25);
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+      transform: none;
+    }
+
+    .summary {
+      display: none;
+      margin-top: 16px;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 18px;
+    }
+
+    .summary.show {
+      display: block;
+    }
+
+    .summary h3 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+    }
+
+    .summary p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 0.95rem;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 640px) {
+      .page { padding: 14px; }
+      .hero { padding: 6px 2px 10px; }
+      .card { padding: 18px; border-radius: 22px; }
+      .question-shell { padding: 18px; min-height: 0; }
+      .actions { flex-direction: column-reverse; }
+      .btn { width: 100%; }
+      .progress-wrap { margin-top: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="container">
+      <header class="hero">
+        <div class="badge"><span class="dot"></span> FuturePath AI Assessment</div>
+        <h1>Let’s understand the student first.</h1>
+        <p>
+          This short assessment collects school-level context such as class, subjects, interests, strengths, and goals.
+          The answers are stored and sent to the chat flow later so AI can give more relevant career guidance.
+        </p>
+      </header>
+
+      <section class="card" aria-label="Assessment form">
+        <div class="topline">
+          <div>
+            <div class="meta" id="sectionMeta">Student Details</div>
+            <h2 id="formTitle">Step-by-step counselling setup</h2>
+            <p class="desc" id="formDesc">Choose the right option for each question. The flow will change based on class.</p>
+          </div>
+        </div>
+
+        <div class="progress-wrap" aria-label="Progress bar">
+          <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="progress-text" id="progressText">0%</div>
+        </div>
+
+        <div class="question-shell" id="questionShell">
+          <div class="question-header">
+            <span class="step-pill" id="stepPill">Question 1 of 1</span>
+            <span class="hint" id="questionHint">Pick one option</span>
+          </div>
+
+          <h3 class="question-title" id="questionTitle"></h3>
+          <p class="question-help" id="questionHelp"></p>
+
+          <div id="questionArea"></div>
+
+          <div class="other-wrap" id="otherWrap">
+            <input id="otherInput" class="other-input" type="text" placeholder="Type your answer here" />
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-secondary" id="backBtn" type="button">Back</button>
+            <button class="btn btn-primary" id="nextBtn" type="button">Next</button>
+          </div>
+        </div>
+
+        <div class="summary" id="summaryBox">
+          <h3>Profile saved</h3>
+          <p>Your assessment data is saved locally and the page will open chat automatically.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const questionSets = {
+      initial: [
+        {
+          id: "classLevel",
+          title: "Which class are you currently in?",
+          help: "This decides which counselling path we use next.",
+          type: "single",
+          sectionTitle: "Student Details",
+          options: ["Below 10th", "10th", "11th", "12th"]
+        }
+      ],
+      lowerSchool: [
+        {
+          id: "subjects",
+          title: "Which subjects do you enjoy the most?",
+          help: "Select one or more subjects. Choose Other if your subject is not listed.",
+          type: "multi",
+          sectionTitle: "Stream Selection",
+          options: ["Science", "Math", "Social Science", "English", "Computer", "Other"]
+        },
+        {
+          id: "interests",
+          title: "What are your interests?",
+          help: "These help us understand what kind of stream may suit the student.",
+          type: "multi",
+          sectionTitle: "Stream Selection",
+          options: ["Technology", "Medical / Biology", "Business", "Creative (Art, Design)", "Helping people", "Other"]
+        },
+        {
+          id: "strengths",
+          title: "What are your strengths?",
+          help: "Pick the qualities that describe you best.",
+          type: "multi",
+          sectionTitle: "Stream Selection",
+          options: ["Logical thinking", "Creativity", "Communication", "Practical skills", "Other"]
+        },
+        {
+          id: "priority",
+          title: "What matters most to you?",
+          help: "This helps the system understand the student’s priorities.",
+          type: "single",
+          sectionTitle: "Stream Selection",
+          options: ["High salary", "Passion", "Job stability", "Business", "Other"]
+        }
+      ],
+      seniorSchool: [
+        {
+          id: "stream",
+          title: "Which stream are you studying now?",
+          help: "Use school-friendly terms for the stream.",
+          type: "single",
+          sectionTitle: "Career Guidance",
+          options: ["Science (Medical)", "Science (Non-Medical)", "Commerce", "Arts"]
+        },
+        {
+          id: "subjects",
+          title: "Which subjects do you like the most?",
+          help: "Select one or more subjects. These help us suggest courses after school.",
+          type: "multi",
+          sectionTitle: "Career Guidance",
+          options: ["Physics", "Chemistry", "Biology", "Math", "Accountancy", "Economics", "Business Studies", "History", "Political Science", "English", "Computer Science", "Other"]
+        },
+        {
+          id: "interests",
+          title: "What are your interests?",
+          help: "Choose the areas that feel most exciting to you.",
+          type: "multi",
+          sectionTitle: "Career Guidance",
+          options: ["Technology / Coding", "Medical", "Finance", "Design / Creativity", "Government jobs", "Teaching", "Helping people", "Other"]
+        },
+        {
+          id: "strengths",
+          title: "What are your strengths?",
+          help: "Choose the qualities that match you best.",
+          type: "multi",
+          sectionTitle: "Career Guidance",
+          options: ["Problem solving", "Communication", "Creativity", "Leadership", "Analytical thinking", "Other"]
+        },
+        {
+          id: "goal",
+          title: "What is your main goal right now?",
+          help: "This helps us suggest careers and courses in the right direction.",
+          type: "single",
+          sectionTitle: "Career Guidance",
+          options: ["Job", "Higher studies", "Business", "Government job", "Other"]
+        }
+      ]
+    };
+
+    const state = {
+      flow: "initial",
+      questions: questionSets.initial.slice(),
+      index: 0,
+      answers: {},
+      selectedSingle: null,
+      selectedMulti: [],
+      otherValue: ""
+    };
+
+    const ui = {
+      sectionMeta: document.getElementById("sectionMeta"),
+      formTitle: document.getElementById("formTitle"),
+      formDesc: document.getElementById("formDesc"),
+      progressFill: document.getElementById("progressFill"),
+      progressText: document.getElementById("progressText"),
+      stepPill: document.getElementById("stepPill"),
+      questionHint: document.getElementById("questionHint"),
+      questionTitle: document.getElementById("questionTitle"),
+      questionHelp: document.getElementById("questionHelp"),
+      questionArea: document.getElementById("questionArea"),
+      otherWrap: document.getElementById("otherWrap"),
+      otherInput: document.getElementById("otherInput"),
+      backBtn: document.getElementById("backBtn"),
+      nextBtn: document.getElementById("nextBtn"),
+      questionShell: document.getElementById("questionShell"),
+      summaryBox: document.getElementById("summaryBox")
+    };
+
+    function getCurrentQuestion() {
+      return state.questions[state.index];
+    }
+
+    function getProgressPercent() {
+      const total = state.questions.length;
+      if (total <= 1) return 0;
+      return Math.round((state.index / (total)) * 100);
+    }
+
+    function updateProgress() {
+      const percent = getProgressPercent();
+      ui.progressFill.style.width = `${percent}%`;
+      ui.progressText.textContent = `${percent}%`;
+      ui.stepPill.textContent = `Question ${Math.min(state.index + 1, state.questions.length)} of ${state.questions.length}`;
+    }
+
+    function setFlow(flow) {
+      state.flow = flow;
+      state.questions = [questionSets.initial[0], ...(flow === "lowerSchool" ? questionSets.lowerSchool : questionSets.seniorSchool)];
+      state.index = 1;
+      state.selectedSingle = null;
+      state.selectedMulti = [];
+      state.otherValue = "";
+      renderQuestion();
+    }
+
+    function showOtherInput(show) {
+      ui.otherWrap.classList.toggle("show", show);
+      if (show) ui.otherInput.focus();
+      else ui.otherInput.value = "";
+    }
+
+    function renderQuestion() {
+      const q = getCurrentQuestion();
+      if (!q) return;
+
+      ui.sectionMeta.textContent = q.sectionTitle || "Student Details";
+      ui.formTitle.textContent = state.index === 0 ? "Step-by-step counselling setup" : (q.sectionTitle || "Counselling setup");
+      ui.formDesc.textContent = state.index === 0
+        ? "Choose the right option. The next questions will adjust automatically based on class."
+        : (q.help || "");
+
+      ui.questionTitle.textContent = q.title;
+      ui.questionHelp.textContent = q.help || "";
+      ui.questionHint.textContent = q.type === "single" ? "Pick one option" : "Pick one or more options";
+
+      ui.questionArea.innerHTML = "";
+      ui.otherWrap.classList.remove("show");
+      ui.otherInput.value = "";
+
+      if (q.type === "single") {
+        const wrap = document.createElement("div");
+        wrap.className = "options";
+
+        q.options.forEach((option) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "option-btn";
+          btn.textContent = option;
+
+          if (state.selectedSingle === option) btn.classList.add("selected");
+
+          btn.addEventListener("click", () => {
+            state.selectedSingle = option;
+            [...ui.questionArea.querySelectorAll(".option-btn")].forEach((b) => b.classList.toggle("selected", b.textContent === option));
+
+            if (option === "Other") {
+              showOtherInput(true);
+            } else {
+              state.otherValue = "";
+              showOtherInput(false);
+            }
+            updateButtons();
+          });
+
+          wrap.appendChild(btn);
+        });
+
+        ui.questionArea.appendChild(wrap);
+      } else {
+        const wrap = document.createElement("div");
+        wrap.className = "chips";
+
+        q.options.forEach((option) => {
+          const chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = "chip";
+          chip.textContent = option;
+          if (state.selectedMulti.includes(option)) chip.classList.add("selected");
+
+          chip.addEventListener("click", () => {
+            const idx = state.selectedMulti.indexOf(option);
+            if (idx >= 0) state.selectedMulti.splice(idx, 1);
+            else state.selectedMulti.push(option);
+
+            const allChips = [...ui.questionArea.querySelectorAll(".chip")];
+            allChips.forEach((c) => c.classList.toggle("selected", state.selectedMulti.includes(c.textContent)));
+
+            if (state.selectedMulti.includes("Other")) {
+              showOtherInput(true);
+            } else {
+              state.otherValue = "";
+              showOtherInput(false);
+            }
+            updateButtons();
+          });
+
+          wrap.appendChild(chip);
+        });
+
+        ui.questionArea.appendChild(wrap);
+
+        const note = document.createElement("p");
+        note.className = "multi-note";
+        note.textContent = "You can pick more than one answer. Use Other to add a custom response.";
+        ui.questionArea.appendChild(note);
+      }
+
+      ui.backBtn.disabled = state.index === 0;
+      ui.nextBtn.disabled = true;
+      updateProgress();
+      updateButtons();
+    }
+
+    function updateButtons() {
+      const q = getCurrentQuestion();
+      if (!q) return;
+
+      if (q.type === "single") {
+        ui.nextBtn.disabled = !state.selectedSingle;
+      } else {
+        ui.nextBtn.disabled = state.selectedMulti.length === 0;
+      }
+      ui.backBtn.disabled = state.index === 0;
+    }
+
+    function saveCurrentAnswer() {
+      const q = getCurrentQuestion();
+      if (!q) return;
+
+      if (q.type === "single") {
+        let value = state.selectedSingle;
+        if (value === "Other") {
+          value = state.otherValue.trim() || "Other";
+        }
+        state.answers[q.id] = value;
+      } else {
+        const values = [...state.selectedMulti];
+        if (values.includes("Other")) {
+          const custom = state.otherValue.trim();
+          if (custom) values.push(custom);
+        }
+        state.answers[q.id] = values;
+      }
+    }
+
+    function nextStep() {
+      saveCurrentAnswer();
+
+      const q = getCurrentQuestion();
+      if (q && q.id === "classLevel") {
+        if (state.selectedSingle === "Below 10th" || state.selectedSingle === "10th") {
+          setFlow("lowerSchool");
+          return;
+        }
+        if (state.selectedSingle === "11th" || state.selectedSingle === "12th") {
+          setFlow("seniorSchool");
+          return;
+        }
+      }
+
+      if (state.index < state.questions.length - 1) {
+        state.index += 1;
+        state.selectedSingle = null;
+        state.selectedMulti = [];
+        state.otherValue = "";
+        renderQuestion();
+        return;
+      }
+
+      finishAssessment();
+    }
+
+    function previousStep() {
+      if (state.index === 0) return;
+
+      state.index -= 1;
+      state.selectedSingle = state.answers.classLevel || null;
+      state.selectedMulti = [];
+      state.otherValue = "";
+      renderQuestion();
+    }
+
+    function finishAssessment() {
+  saveCurrentAnswer();
+
+  const profile = {
+    classLevel: state.answers.classLevel || null,
+    stream: state.answers.stream || null,
+    subjects: state.answers.subjects || [],
+    interests: state.answers.interests || [],
+    strengths: state.answers.strengths || [],
+    priority: state.answers.priority || null,
+    goal: state.answers.goal || null,
+    assessmentFlow: state.flow,
+    assessmentCompletedAt: new Date().toISOString()
+  };
+
+  localStorage.setItem("studentProfile", JSON.stringify(profile));
+  localStorage.setItem("futurepathAssessmentComplete", "true");
+
+  // ✅ ADD THIS (progress fix)
+  ui.progressFill.style.width = "100%";
+  ui.progressText.textContent = "100%";
+
+  ui.questionShell.classList.add("hidden");
+  ui.summaryBox.classList.add("show");
+
+  setTimeout(() => {
+    window.location.href = "chat.html";
+  }, 1200);
+}
+
+    ui.nextBtn.addEventListener("click", nextStep);
+    ui.backBtn.addEventListener("click", previousStep);
+
+    ui.otherInput.addEventListener("input", (e) => {
+      state.otherValue = e.target.value;
+      updateButtons();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const tag = document.activeElement && document.activeElement.tagName ? document.activeElement.tagName.toLowerCase() : "";
+        if (tag !== "textarea") {
+          e.preventDefault();
+          if (!ui.nextBtn.disabled) nextStep();
+        }
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>

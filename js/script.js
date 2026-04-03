@@ -145,10 +145,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (startBtn) {
-        startBtn.addEventListener("click", () => {
-            window.location.href = "chat.html";
-        });
-    }
+    startBtn.addEventListener("click", () => {
+        // 🆕 Clear old assessment data
+        localStorage.removeItem("studentProfile");
+        localStorage.removeItem("futurepathAssessmentComplete");
+
+        window.location.href = "assessment.html";
+    });
+}
 
     if (featuresBtn) {
         featuresBtn.addEventListener("click", () => {

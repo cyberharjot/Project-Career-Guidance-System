@@ -969,3 +969,7 @@ body.sidebar-collapsed .backdrop {
         scroll-behavior: auto !important;
     }
 }
+
+body.menu-open {
+    overflow: hidden;
+}
