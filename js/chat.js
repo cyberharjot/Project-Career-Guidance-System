@@ -16,6 +16,15 @@ const quickChips = document.querySelectorAll(".quick-chip");
 const STORAGE_KEY = "fpa_chats_v1";
 const CURRENT_KEY = "fpa_current_chat_v1";
 const USER_ID_KEY = "fpa_user_id_v1";
+const STUDENT_PROFILE_KEY = "studentProfile";
+
+// Change this once after deployment
+const API_BASE_URL =
+    !window.location.hostname || 
+    window.location.hostname === "localhost" || 
+    window.location.hostname === "127.0.0.1"
+        ? "http://127.0.0.1:5000"
+        : "https://YOUR-RENDER-APP.onrender.com";
 
 const isMobile = () => window.matchMedia("(max-width: 900px)").matches;
 
@@ -44,6 +53,18 @@ if (!userId) {
     userId = "user_" + Date.now();
     localStorage.setItem(USER_ID_KEY, userId);
 }
+
+/* STUDENT PROFILE */
+function loadStudentProfile() {
+    try {
+        const raw = localStorage.getItem(STUDENT_PROFILE_KEY);
+        return raw ? JSON.parse(raw) : null;
+    } catch {
+        return null;
+    }
+}
+
+const studentProfile = loadStudentProfile();
 
 /* STORAGE */
 function loadChats() {
@@ -139,6 +160,7 @@ window.addEventListener("load", () => {
 function openSidebar() {
     if (isMobile()) {
         document.body.classList.add("sidebar-open");
+        document.body.classList.remove("sidebar-collapsed");
     } else {
         document.body.classList.remove("sidebar-collapsed");
     }
@@ -323,6 +345,16 @@ function autoResizeTextarea() {
     input.style.height = Math.min(input.scrollHeight, 168) + "px";
 }
 
+function getBackendHistory() {
+    const chat = getCurrentChat();
+    if (!chat) return [];
+
+    return chat.messages.map((m) => ({
+        role: m.role === "bot" ? "assistant" : m.role,
+        content: m.text
+    }));
+}
+
 async function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
@@ -335,7 +367,7 @@ async function sendMessage() {
     showTyping();
 
     try {
-        const response = await fetch("http://127.0.0.1:5000/chat", {
+        const response = await fetch(`${API_BASE_URL}/chat`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -343,13 +375,8 @@ async function sendMessage() {
             body: JSON.stringify({
                 user_id: userId,
                 message: text,
-                history: getCurrentChat().messages
-                    .slice(0, -1)
-                    .filter(m => m.role === "user" || m.role === "bot" || m.role === "assistant")
-                    .map(m => ({
-                        role: m.role === "bot" ? "assistant" : m.role,
-                        content: m.text
-                    }))
+                history: getBackendHistory().slice(0, -1),
+                profile: studentProfile
             })
         });
 
@@ -389,8 +416,8 @@ function initSidebarState() {
         document.body.classList.remove("sidebar-collapsed");
         document.body.classList.remove("sidebar-open");
     } else {
+        document.body.classList.add("sidebar-collapsed");
         document.body.classList.remove("sidebar-open");
-        document.body.classList.remove("sidebar-collapsed");
     }
 }
 
@@ -457,7 +484,11 @@ function init() {
     autoResizeTextarea();
 
     if (!getCurrentChat().messages.length) {
-        addMessage("bot", "Hi 👋 I’m your career assistant. Let’s find your ideal career path!", true);
+        const greeting = studentProfile && studentProfile.classLevel
+            ? `Hi 👋 I’m your school career counsellor. I already have your assessment details for ${studentProfile.classLevel}. Ask me about streams, courses, or career options.`
+            : "Hi 👋 I’m your school career counsellor. Let’s find the best path for you after school!";
+
+        addMessage("bot", greeting, true);
     }
 
     scrollToBottom(false);

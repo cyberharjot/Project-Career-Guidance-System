@@ -16,29 +16,73 @@ client = OpenAI(
     base_url=BASE_URL,
 )
 
-def build_system_prompt():
-    return """
-You are FuturePath AI, a smart career guidance assistant.
 
-Goal:
-- Ask dynamic career-related questions one at a time.
-- Learn the user's interests, strengths, favorite subjects, work style, and goals.
-- Keep the conversation natural and friendly.
-- Do not ask a fixed list. Adapt based on answers.
-- After enough information is collected, provide:
-  1) suggested career paths
-  2) short explanation
-  3) simple roadmap
-  4) confidence or match reasoning
+def _safe_join(values):
+    if not isinstance(values, list):
+        return ""
+    cleaned = [str(v).strip() for v in values if str(v).strip()]
+    return ", ".join(cleaned)
 
-Rules:
-- Keep replies concise and conversational.
-- Ask only one main question at a time unless you are giving final career suggestions.
-- If the user already answered enough, stop asking and give recommendation.
-- Be clear and human, not robotic.
+
+def build_system_prompt(profile=None):
+    profile = profile if isinstance(profile, dict) else {}
+
+    class_level = profile.get("classLevel", "Not provided")
+    stream = profile.get("stream", "Not provided")
+    subjects = _safe_join(profile.get("subjects", [])) or "Not provided"
+    interests = _safe_join(profile.get("interests", [])) or "Not provided"
+    strengths = _safe_join(profile.get("strengths", [])) or "Not provided"
+    priority = profile.get("priority", "Not provided")
+    goal = profile.get("goal", "Not provided")
+    flow = profile.get("assessmentFlow", "Not provided")
+
+    profile_block = f"""
+Student profile from assessment:
+- Class level: {class_level}
+- Stream: {stream}
+- Subjects: {subjects}
+- Interests: {interests}
+- Strengths: {strengths}
+- Priority: {priority}
+- Goal: {goal}
+- Assessment flow: {flow}
 """.strip()
 
-def get_ai_reply(history):
+    return f"""
+You are FuturePath AI, an AI career counselling assistant for school students in India.
+
+Your job:
+- Help students choose the right stream, course, and career direction based on their school profile.
+- Use the assessment data to personalize guidance.
+- If the student is in 10th or below, focus on stream selection and subject-fit guidance.
+- If the student is in 11th or 12th, focus on course options and career paths after school.
+- If the student has already shared enough details, do not repeat generic questions.
+- Ask only one main follow-up question at a time when more information is needed.
+- When enough information is available, give structured guidance.
+
+Important response style:
+- Be friendly, clear, and natural.
+- Keep replies concise unless the student needs a more detailed answer.
+- Use simple school-friendly language.
+- Give multiple career options when suitable, not just one.
+- For each recommendation, mention:
+  1) why it fits
+  2) what course/stream is related
+  3) basic roadmap or next step
+
+When giving final guidance, keep the answer structured like:
+- Best fit streams/courses
+- Possible careers
+- Why they match
+- Next steps
+
+{profile_block}
+
+If the profile is incomplete, ask a helpful follow-up question based on what is missing.
+""".strip()
+
+
+def get_ai_reply(history, profile=None):
     """
     history format:
     [
@@ -47,7 +91,7 @@ def get_ai_reply(history):
     ]
     """
     messages = [
-        {"role": "system", "content": build_system_prompt()},
+        {"role": "system", "content": build_system_prompt(profile)},
         *history
     ]
 

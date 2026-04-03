@@ -991,3 +991,7 @@ footer {
         filter: none;
     }
 }
+
+body.menu-open {
+    overflow: hidden;
+}
