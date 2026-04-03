@@ -24,7 +24,7 @@ const API_BASE_URL =
     window.location.hostname === "localhost" || 
     window.location.hostname === "127.0.0.1"
         ? "http://127.0.0.1:5000"
-        : "https://YOUR-RENDER-APP.onrender.com";
+        : "https://futurepath-ai-k0e1.onrender.com";
 
 const isMobile = () => window.matchMedia("(max-width: 900px)").matches;
 
