@@ -17,11 +17,14 @@ const STORAGE_KEY = "fpa_chats_v1";
 const CURRENT_KEY = "fpa_current_chat_v1";
 const USER_ID_KEY = "fpa_user_id_v1";
 const STUDENT_PROFILE_KEY = "studentProfile";
+const QUIZ_RESULT_KEY = "quizResult";
 
-// Change this once after deployment
+// Local and live both work:
+// - file:// or localhost -> local Flask
+// - deployed site -> Render backend
 const API_BASE_URL =
-    !window.location.hostname || 
-    window.location.hostname === "localhost" || 
+    window.location.protocol === "file:" ||
+    window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1"
         ? "http://127.0.0.1:5000"
         : "https://futurepath-ai-k0e1.onrender.com";
@@ -64,7 +67,17 @@ function loadStudentProfile() {
     }
 }
 
+function loadQuizResult() {
+    try {
+        const raw = localStorage.getItem(QUIZ_RESULT_KEY);
+        return raw ? JSON.parse(raw) : null;
+    } catch {
+        return null;
+    }
+}
+
 const studentProfile = loadStudentProfile();
+const quizResult = loadQuizResult();
 
 /* STORAGE */
 function loadChats() {
@@ -376,7 +389,8 @@ async function sendMessage() {
                 user_id: userId,
                 message: text,
                 history: getBackendHistory().slice(0, -1),
-                profile: studentProfile
+                profile: studentProfile,
+                quiz: quizResult
             })
         });
 
@@ -483,11 +497,17 @@ function init() {
     renderAll();
     autoResizeTextarea();
 
-    if (!getCurrentChat().messages.length) {
-        const greeting = studentProfile && studentProfile.classLevel
-            ? `Hi 👋 I’m your school career counsellor. I already have your assessment details for ${studentProfile.classLevel}. Ask me about streams, courses, or career options.`
-            : "Hi 👋 I’m your school career counsellor. Let’s find the best path for you after school!";
+    const hasProfile = studentProfile && studentProfile.classLevel;
+    const hasQuiz = quizResult && quizResult.topRecommendations && quizResult.topRecommendations.length;
 
+    let greeting = "Hi 👋 I’m your school career counsellor. Let’s find the best path for you after school!";
+    if (hasProfile && hasQuiz) {
+        greeting = `Hi 👋 I’m your school career counsellor. I already have your assessment and quiz details for ${studentProfile.classLevel}. Ask me about streams, courses, or career options.`;
+    } else if (hasProfile) {
+        greeting = `Hi 👋 I’m your school career counsellor. I already have your assessment details for ${studentProfile.classLevel}. Ask me about streams, courses, or career options.`;
+    }
+
+    if (!getCurrentChat().messages.length) {
         addMessage("bot", greeting, true);
     }
 

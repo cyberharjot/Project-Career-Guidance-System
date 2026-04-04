@@ -14,7 +14,8 @@ CORS(app)
 # Structure:
 # conversations[user_id] = {
 #     "history": [...],
-#     "profile": {...}
+#     "profile": {...},
+#     "quiz": {...}
 # }
 conversations = {}
 
@@ -66,6 +67,7 @@ def chat():
     message = data.get("message")
     history = data.get("history", [])
     profile = data.get("profile")
+    quiz = data.get("quiz")
 
     if not user_id:
         return jsonify({"error": "user_id is required"}), 400
@@ -76,15 +78,19 @@ def chat():
     if user_id not in conversations:
         conversations[user_id] = {
             "history": [],
-            "profile": None
+            "profile": None,
+            "quiz": None
         }
 
-    # If frontend sends profile from assessment, store it.
+    # Store profile if sent from assessment page
     if isinstance(profile, dict):
         conversations[user_id]["profile"] = profile
 
+    # Store quiz result if sent from quiz page
+    if isinstance(quiz, dict):
+        conversations[user_id]["quiz"] = quiz
+
     # If frontend sends full history, use that as the source of truth.
-    # Otherwise keep backend memory.
     normalized_history = normalize_history(history)
     if normalized_history:
         conversations[user_id]["history"] = normalized_history
@@ -97,7 +103,8 @@ def chat():
     try:
         reply = get_ai_reply(
             conversations[user_id]["history"],
-            profile=conversations[user_id]["profile"]
+            profile=conversations[user_id]["profile"],
+            quiz=conversations[user_id]["quiz"]
         )
     except Exception as e:
         return jsonify({

@@ -24,8 +24,20 @@ def _safe_join(values):
     return ", ".join(cleaned)
 
 
-def build_system_prompt(profile=None):
+def _pretty_dict(value):
+    if not isinstance(value, dict):
+        return "Not provided"
+    parts = []
+    for k, v in value.items():
+        if isinstance(v, list):
+            v = _safe_join(v)
+        parts.append(f"{k}: {v}")
+    return "\n".join(parts) if parts else "Not provided"
+
+
+def build_system_prompt(profile=None, quiz=None):
     profile = profile if isinstance(profile, dict) else {}
+    quiz = quiz if isinstance(quiz, dict) else {}
 
     class_level = profile.get("classLevel", "Not provided")
     stream = profile.get("stream", "Not provided")
@@ -35,6 +47,23 @@ def build_system_prompt(profile=None):
     priority = profile.get("priority", "Not provided")
     goal = profile.get("goal", "Not provided")
     flow = profile.get("assessmentFlow", "Not provided")
+
+    quiz_path = quiz.get("primaryPath", "Not provided")
+    quiz_used = quiz.get("pathUsed", "Not provided")
+    quiz_scores = _pretty_dict(quiz.get("scores", {}))
+    quiz_top = quiz.get("topRecommendations", [])
+
+    top_text = "Not provided"
+    if isinstance(quiz_top, list) and quiz_top:
+        lines = []
+        for item in quiz_top[:3]:
+            if isinstance(item, dict):
+                track = item.get("track", "Unknown")
+                careers = item.get("careers", "Unknown")
+                note = item.get("note", "Unknown")
+                lines.append(f"- {track}: {careers} | {note}")
+        if lines:
+            top_text = "\n".join(lines)
 
     profile_block = f"""
 Student profile from assessment:
@@ -48,15 +77,25 @@ Student profile from assessment:
 - Assessment flow: {flow}
 """.strip()
 
+    quiz_block = f"""
+Quiz insights:
+- Primary path: {quiz_path}
+- Path used: {quiz_used}
+- Scores:
+{quiz_scores}
+- Top recommendations:
+{top_text}
+""".strip()
+
     return f"""
 You are FuturePath AI, an AI career counselling assistant for school students in India.
 
 Your job:
 - Help students choose the right stream, course, and career direction based on their school profile.
-- Use the assessment data to personalize guidance.
+- Use both assessment data and quiz insights to personalize guidance.
 - If the student is in 10th or below, focus on stream selection and subject-fit guidance.
 - If the student is in 11th or 12th, focus on course options and career paths after school.
-- If the student has already shared enough details, do not repeat generic questions.
+- If enough information is already available, do not repeat generic questions.
 - Ask only one main follow-up question at a time when more information is needed.
 - When enough information is available, give structured guidance.
 
@@ -69,6 +108,7 @@ Important response style:
   1) why it fits
   2) what course/stream is related
   3) basic roadmap or next step
+- If quiz insights exist, use them to sharpen the recommendation and confidence.
 
 When giving final guidance, keep the answer structured like:
 - Best fit streams/courses
@@ -78,11 +118,13 @@ When giving final guidance, keep the answer structured like:
 
 {profile_block}
 
+{quiz_block}
+
 If the profile is incomplete, ask a helpful follow-up question based on what is missing.
 """.strip()
 
 
-def get_ai_reply(history, profile=None):
+def get_ai_reply(history, profile=None, quiz=None):
     """
     history format:
     [
@@ -91,7 +133,7 @@ def get_ai_reply(history, profile=None):
     ]
     """
     messages = [
-        {"role": "system", "content": build_system_prompt(profile)},
+        {"role": "system", "content": build_system_prompt(profile, quiz)},
         *history
     ]
 

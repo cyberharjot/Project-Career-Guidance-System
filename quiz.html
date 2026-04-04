@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#070b17" />
+  <title>FuturePath AI | Personalized Quiz</title>
+  <style>
+    :root {
+      --bg: #070b17;
+      --panel: rgba(15, 20, 40, 0.82);
+      --panel-2: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.09);
+      --text: #edf1ff;
+      --muted: #aab3d6;
+      --accent: #7c5cff;
+      --accent-2: #22c55e;
+      --warning: #f59e0b;
+      --shadow: 0 22px 80px rgba(0, 0, 0, 0.38);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --transition: 200ms ease;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(124, 92, 255, 0.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(34, 197, 94, 0.10), transparent 24%),
+        linear-gradient(180deg, #050714 0%, #070b17 100%);
+      color: var(--text);
+    }
+
+    .page {
+      min-height: 100vh;
+      padding: 24px;
+      display: grid;
+      place-items: center;
+    }
+
+    .container {
+      width: min(980px, 100%);
+    }
+
+    .hero {
+      margin-bottom: 18px;
+      padding: 18px 6px 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(124, 92, 255, 0.14);
+      color: #ddd6ff;
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .badge .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 7px rgba(124, 92, 255, 0.14);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p {
+      margin: 12px 0 0;
+      max-width: 72ch;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 1rem;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+    }
+
+    .topline {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .topline .meta {
+      color: #cfd6ff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+
+    .topline h2 {
+      margin: 0;
+      font-size: clamp(1.35rem, 2.4vw, 2rem);
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+    }
+
+    .topline .desc {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 68ch;
+    }
+
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0 18px;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), #9f7bff);
+      transition: width var(--transition);
+    }
+
+    .progress-text {
+      min-width: 56px;
+      text-align: right;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .question-shell {
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.035);
+      padding: 22px;
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .question-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .step-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(124, 92, 255, 0.14);
+      color: #e3dbff;
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .question-title {
+      margin: 0;
+      font-size: clamp(1.2rem, 2.1vw, 1.55rem);
+      line-height: 1.35;
+      letter-spacing: -0.02em;
+    }
+
+    .question-help {
+      margin: -6px 0 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 0.96rem;
+    }
+
+    .context-box {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 4px;
+    }
+
+    .context-card {
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 12px 14px;
+      min-height: 72px;
+    }
+
+    .context-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .context-card strong {
+      font-size: 0.96rem;
+      line-height: 1.4;
+    }
+
+    .options {
+      display: grid;
+      gap: 12px;
+    }
+
+    .option-btn {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+      border-radius: var(--radius-md);
+      padding: 15px 16px;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.98rem;
+      line-height: 1.45;
+      transition: transform var(--transition), background var(--transition), border-color var(--transition);
+    }
+
+    .option-btn:hover,
+    .option-btn:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(124, 92, 255, 0.55);
+      background: rgba(124, 92, 255, 0.12);
+      outline: none;
+    }
+
+    .option-btn.selected {
+      border-color: rgba(124, 92, 255, 0.9);
+      background: rgba(124, 92, 255, 0.17);
+    }
+
+    .choice-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .analysis-box {
+      margin-top: 6px;
+      padding: 14px 16px;
+      border-left: 3px solid var(--accent-2);
+      border-radius: 0 12px 12px 0;
+      background: rgba(34, 197, 94, 0.08);
+      color: #dafbe7;
+      display: none;
+    }
+
+    .analysis-box.show {
+      display: block;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-top: auto;
+      padding-top: 4px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform var(--transition), opacity var(--transition), background var(--transition);
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #9f7bff);
+      color: white;
+      box-shadow: 0 14px 30px rgba(124, 92, 255, 0.25);
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+      transform: none;
+    }
+
+    .result-box {
+      display: none;
+      margin-top: 16px;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 18px;
+    }
+
+    .result-box.show {
+      display: block;
+    }
+
+    .result-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 14px;
+    }
+
+    .result-card {
+      border-radius: 16px;
+      background: rgba(2, 6, 23, 0.38);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 14px;
+    }
+
+    .result-card h4 {
+      margin: 0 0 8px;
+      font-size: 0.98rem;
+    }
+
+    .result-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.92rem;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .warning-box {
+      border: 1px solid rgba(245, 158, 11, 0.24);
+      background: rgba(245, 158, 11, 0.08);
+      color: #fff0c7;
+      border-radius: 16px;
+      padding: 14px 16px;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .warning-box.show {
+      display: block;
+    }
+
+    @media (max-width: 920px) {
+      .context-box {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page { padding: 14px; }
+      .hero { padding: 6px 2px 10px; }
+      .card { padding: 18px; border-radius: 22px; }
+      .question-shell { padding: 18px; min-height: 0; }
+      .actions { flex-direction: column-reverse; }
+      .btn { width: 100%; }
+      .context-box { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="container">
+      <header class="hero">
+        <div class="badge"><span class="dot"></span> FuturePath AI Personalized Quiz</div>
+        <h1>Let’s refine the student profile before counselling.</h1>
+        <p>
+          This quiz uses the assessment data to ask smart, relevant questions. It stays lightweight, runs in JavaScript,
+          and prepares better input for the AI counselling chat.
+        </p>
+      </header>
+
+      <section class="card" aria-label="Personalized quiz">
+        <div class="topline">
+          <div>
+            <div class="meta" id="sectionMeta">Personalized Quiz</div>
+            <h2 id="formTitle">Assessment-based aptitude check</h2>
+            <p class="desc" id="formDesc">Questions are selected according to the student’s class, interests, subjects, and goals.</p>
+          </div>
+        </div>
+
+        <div class="warning-box" id="warningBox"></div>
+
+        <div class="context-box" id="contextBox"></div>
+
+        <div class="progress-wrap" aria-label="Progress bar">
+          <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="progress-text" id="progressText">0%</div>
+        </div>
+
+        <div class="question-shell" id="questionShell">
+          <div class="question-header">
+            <span class="step-pill" id="stepPill">Question 1 of 1</span>
+            <span class="hint" id="questionHint">Pick one option</span>
+          </div>
+
+          <h3 class="question-title" id="questionTitle"></h3>
+          <p class="question-help" id="questionHelp"></p>
+
+          <div class="choice-meta">
+            <span id="trackMeta">Track: General</span>
+            <span id="difficultyMeta">Level: Aptitude</span>
+          </div>
+
+          <div id="questionArea"></div>
+
+          <div class="analysis-box" id="analysisBox"></div>
+
+          <div class="actions">
+            <button class="btn btn-secondary" id="backBtn" type="button">Back</button>
+            <button class="btn btn-primary" id="nextBtn" type="button">Next</button>
+          </div>
+        </div>
+
+        <div class="result-box" id="resultBox">
+          <h3 style="margin:0; font-size:1.05rem;">Quiz completed</h3>
+          <p id="resultSummary" style="margin:10px 0 0; color:var(--muted); line-height:1.65;"></p>
+          <div class="result-grid" id="resultGrid"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const STORAGE_PROFILE_KEY = "studentProfile";
+    const STORAGE_QUIZ_KEY = "quizResult";
+
+    const ui = {
+      warningBox: document.getElementById("warningBox"),
+      contextBox: document.getElementById("contextBox"),
+      sectionMeta: document.getElementById("sectionMeta"),
+      formTitle: document.getElementById("formTitle"),
+      formDesc: document.getElementById("formDesc"),
+      progressFill: document.getElementById("progressFill"),
+      progressText: document.getElementById("progressText"),
+      stepPill: document.getElementById("stepPill"),
+      questionHint: document.getElementById("questionHint"),
+      questionTitle: document.getElementById("questionTitle"),
+      questionHelp: document.getElementById("questionHelp"),
+      questionArea: document.getElementById("questionArea"),
+      trackMeta: document.getElementById("trackMeta"),
+      difficultyMeta: document.getElementById("difficultyMeta"),
+      analysisBox: document.getElementById("analysisBox"),
+      questionShell: document.getElementById("questionShell"),
+      resultBox: document.getElementById("resultBox"),
+      resultSummary: document.getElementById("resultSummary"),
+      resultGrid: document.getElementById("resultGrid"),
+      backBtn: document.getElementById("backBtn"),
+      nextBtn: document.getElementById("nextBtn")
+    };
+
+    function safeParse(raw) {
+      try {
+        return raw ? JSON.parse(raw) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    const profile = safeParse(localStorage.getItem(STORAGE_PROFILE_KEY));
+
+    if (!profile) {
+      ui.warningBox.classList.add("show");
+      ui.warningBox.innerHTML = `No assessment profile was found. Please complete the assessment first and then return to this quiz.`;
+      ui.questionShell.classList.add("hidden");
+      ui.resultBox.classList.add("hidden");
+      throw new Error("Missing studentProfile in localStorage");
+    }
+
+    function normalizeText(value) {
+      return String(value || "").toLowerCase();
+    }
+
+    function includesAny(source, keywords) {
+      const text = normalizeText(Array.isArray(source) ? source.join(" ") : source);
+      return keywords.some(k => text.includes(k));
+    }
+
+    function detectPrimaryPath(p) {
+      const interests = p.interests || [];
+      const subjects = p.subjects || [];
+      const stream = normalizeText(p.stream || "");
+      const classLevel = normalizeText(p.classLevel || "");
+      const goal = normalizeText(p.goal || "");
+
+      if (includesAny(interests, ["technology", "coding", "computer", "tech"]) || includesAny(subjects, ["computer", "math", "physics"]) || stream.includes("non-medical")) return "tech";
+      if (includesAny(interests, ["medical", "biology", "health", "doctor", "nursing"]) || includesAny(subjects, ["biology", "chemistry"]) || stream.includes("medical")) return "medical";
+      if (includesAny(interests, ["business", "finance", "commerce", "entrepreneur", "money"]) || stream.includes("commerce") || goal.includes("business")) return "commerce";
+      if (includesAny(interests, ["creative", "design", "art", "writing", "media"]) || stream.includes("arts") || includesAny(subjects, ["english", "history", "political science"])) return "creative";
+      if (includesAny(interests, ["helping people", "teaching", "social", "community"]) || goal.includes("government") || goal.includes("teacher")) return "social";
+
+      if (classLevel.includes("below 10") || classLevel.includes("10th")) return "foundation";
+      return "general";
+    }
+
+    const path = detectPrimaryPath(profile);
+
+    const contextItems = [
+      { label: "Class", value: profile.classLevel || "Not set" },
+      { label: "Stream", value: profile.stream || "Not set" },
+      { label: "Interests", value: Array.isArray(profile.interests) ? profile.interests.slice(0, 2).join(", ") || "Not set" : "Not set" },
+      { label: "Goal", value: profile.goal || "Not set" }
+    ];
+
+    ui.contextBox.innerHTML = contextItems.map(item => `
+      <div class="context-card">
+        <span>${item.label}</span>
+        <strong>${item.value}</strong>
+      </div>
+    `).join("");
+
+    const resultLabels = {
+      tech: {
+        title: "Technology & Problem Solving",
+        careers: "Software Development, Data Science, AI/ML, Cybersecurity, App Development",
+        note: "The profile shows strong alignment with logical and technical pathways."
+      },
+      medical: {
+        title: "Medical & Life Sciences",
+        careers: "MBBS, BDS, Nursing, Pharmacy, Biomedical Science, Physiotherapy",
+        note: "The profile suggests interest in biology, care, or health-related careers."
+      },
+      commerce: {
+        title: "Commerce & Business",
+        careers: "B.Com, CA, Finance, Marketing, Entrepreneurship, Banking",
+        note: "The profile fits business, money, and market-oriented career paths."
+      },
+      creative: {
+        title: "Creative & Communication",
+        careers: "Design, Journalism, Content Writing, Animation, Advertising, UX/UI",
+        note: "The profile points to creative expression and communication strengths."
+      },
+      social: {
+        title: "Social Impact & People-Centered Careers",
+        careers: "Teaching, Psychology, Public Administration, Social Work, Law, HR",
+        note: "The profile suggests an interest in helping people and leadership roles."
+      },
+      foundation: {
+        title: "Foundation & Stream Selection",
+        careers: "Science (Medical), Science (Non-Medical), Commerce, Arts",
+        note: "At this stage, the quiz focuses on stream discovery and aptitude."
+      },
+      general: {
+        title: "Balanced Career Exploration",
+        careers: "Multiple pathways based on aptitude and subject preference",
+        note: "The profile is mixed, so the quiz checks broader strengths before final guidance."
+      }
+    };
+
+    const questionBanks = {
+      tech: [
+        {
+          id: "tech1",
+          title: "When you face a new challenge, what feels most natural?",
+          help: "This helps us understand whether you prefer logic, creativity, or people interaction.",
+          options: [
+            { text: "Break it into smaller logical steps", score: { tech: 2, commerce: 1 } },
+            { text: "Look for a smart technical tool or app", score: { tech: 3 } },
+            { text: "Discuss it with a team and plan together", score: { social: 1, commerce: 1 } },
+            { text: "Turn it into something visually appealing", score: { creative: 2 } }
+          ]
+        },
+        {
+          id: "tech2",
+          title: "Which activity sounds most interesting?",
+          help: "Pick the option that feels most exciting to you.",
+          options: [
+            { text: "Building websites or apps", score: { tech: 3 } },
+            { text: "Solving math or logic puzzles", score: { tech: 2 } },
+            { text: "Explaining ideas to others", score: { social: 1 } },
+            { text: "Creating designs or visuals", score: { creative: 1 } }
+          ]
+        },
+        {
+          id: "tech3",
+          title: "What kind of work style do you prefer?",
+          help: "Choose the environment you feel most comfortable in.",
+          options: [
+            { text: "Independent and detail-focused", score: { tech: 2 } },
+            { text: "Team-based with brainstorming", score: { social: 1, creative: 1 } },
+            { text: "Fast-paced and practical", score: { commerce: 1, tech: 1 } },
+            { text: "Creative and idea-driven", score: { creative: 2 } }
+          ]
+        },
+        {
+          id: "tech4",
+          title: "What do you enjoy more in school?",
+          help: "Your answer helps us estimate your strongest orientation.",
+          options: [
+            { text: "Computer / Math / Physics", score: { tech: 3 } },
+            { text: "Biology / Chemistry", score: { medical: 1 } },
+            { text: "Business / Economics", score: { commerce: 1 } },
+            { text: "English / Art / Design", score: { creative: 1 } }
+          ]
+        },
+        {
+          id: "tech5",
+          title: "Which result feels most rewarding?",
+          help: "This helps us understand what motivates you.",
+          options: [
+            { text: "Creating something useful for many people", score: { tech: 2, social: 1 } },
+            { text: "Earning through smart problem solving", score: { tech: 2, commerce: 1 } },
+            { text: "Helping a person directly", score: { social: 2 } },
+            { text: "Making something beautiful and original", score: { creative: 2 } }
+          ]
+        }
+      ],
+      medical: [
+        {
+          id: "med1",
+          title: "What kind of science work do you like more?",
+          help: "Your answer helps us understand your scientific orientation.",
+          options: [
+            { text: "Studying living systems and health", score: { medical: 3 } },
+            { text: "Experiments and lab work", score: { medical: 2, tech: 1 } },
+            { text: "Explaining science to people", score: { social: 1 } },
+            { text: "Using science in practical ways", score: { tech: 1, medical: 1 } }
+          ]
+        },
+        {
+          id: "med2",
+          title: "Which classroom topic feels easiest to you?",
+          help: "Pick the one you naturally understand better.",
+          options: [
+            { text: "Biology", score: { medical: 3 } },
+            { text: "Chemistry", score: { medical: 2, tech: 1 } },
+            { text: "Math", score: { tech: 1, commerce: 1 } },
+            { text: "English", score: { creative: 1, social: 1 } }
+          ]
+        },
+        {
+          id: "med3",
+          title: "What type of helping role feels meaningful?",
+          help: "This shows whether you connect with care, research, or support work.",
+          options: [
+            { text: "Helping patients and caring directly", score: { medical: 3 } },
+            { text: "Researching and finding better solutions", score: { medical: 2, tech: 1 } },
+            { text: "Educating people about health", score: { social: 2 } },
+            { text: "Managing health-related information", score: { commerce: 1, medical: 1 } }
+          ]
+        },
+        {
+          id: "med4",
+          title: "Which future path sounds more like you?",
+          help: "Think of what feels more natural, not what others expect.",
+          options: [
+            { text: "Doctor / Dentist / Surgeon", score: { medical: 3 } },
+            { text: "Pharmacy / Nursing / Physiotherapy", score: { medical: 2 } },
+            { text: "Biotech / Research / Lab science", score: { medical: 2, tech: 1 } },
+            { text: "Teaching science", score: { social: 1 } }
+          ]
+        },
+        {
+          id: "med5",
+          title: "What motivates you most?",
+          help: "This helps us refine the recommendation.",
+          options: [
+            { text: "Caring for people", score: { social: 2, medical: 1 } },
+            { text: "Understanding the human body", score: { medical: 3 } },
+            { text: "Solving technical health problems", score: { tech: 1, medical: 2 } },
+            { text: "Working in an organized professional setting", score: { commerce: 1 } }
+          ]
+        }
+      ],
+      commerce: [
+        {
+          id: "com1",
+          title: "Which task sounds more interesting?",
+          help: "This helps us see your business orientation.",
+          options: [
+            { text: "Managing money and numbers", score: { commerce: 3 } },
+            { text: "Selling an idea or product", score: { commerce: 2 } },
+            { text: "Building a digital tool", score: { tech: 1 } },
+            { text: "Designing a creative campaign", score: { creative: 1 } }
+          ]
+        },
+        {
+          id: "com2",
+          title: "What would you enjoy more in a project?",
+          help: "Choose the option that feels closest to your style.",
+          options: [
+            { text: "Tracking profit, budget, and growth", score: { commerce: 3 } },
+            { text: "Negotiating and convincing people", score: { commerce: 2, social: 1 } },
+            { text: "Studying market trends", score: { commerce: 2 } },
+            { text: "Making visuals for a brand", score: { creative: 1 } }
+          ]
+        },
+        {
+          id: "com3",
+          title: "How do you feel about entrepreneurship?",
+          help: "This tells us whether you like building opportunities.",
+          options: [
+            { text: "Very exciting", score: { commerce: 3 } },
+            { text: "Interesting, but risky", score: { commerce: 1 } },
+            { text: "I prefer stable jobs", score: { commerce: 1, social: 1 } },
+            { text: "I want to create something new", score: { tech: 1, creative: 1 } }
+          ]
+        },
+        {
+          id: "com4",
+          title: "Which area feels strongest?",
+          help: "Select the one you naturally understand better.",
+          options: [
+            { text: "Accountancy / Finance", score: { commerce: 3 } },
+            { text: "Economics / Business Studies", score: { commerce: 2 } },
+            { text: "Communication / Presentation", score: { social: 1, commerce: 1 } },
+            { text: "Design / Creativity", score: { creative: 1 } }
+          ]
+        },
+        {
+          id: "com5",
+          title: "What kind of success matters most?",
+          help: "This helps us understand your long-term goal.",
+          options: [
+            { text: "Financial growth", score: { commerce: 3 } },
+            { text: "Running my own business", score: { commerce: 3 } },
+            { text: "Respect and leadership", score: { social: 1, commerce: 1 } },
+            { text: "Creative recognition", score: { creative: 1 } }
+          ]
+        }
+      ],
+      creative: [
+        {
+          id: "cre1",
+          title: "Which activity do you enjoy most?",
+          help: "Pick what feels naturally interesting to you.",
+          options: [
+            { text: "Drawing, visuals, or design", score: { creative: 3 } },
+            { text: "Writing or storytelling", score: { creative: 2 } },
+            { text: "Talking to people and presenting ideas", score: { social: 1 } },
+            { text: "Using software to create something", score: { tech: 1, creative: 1 } }
+          ]
+        },
+        {
+          id: "cre2",
+          title: "Which school task feels easiest to you?",
+          help: "Your answer helps identify your strongest creative strengths.",
+          options: [
+            { text: "Making a project look attractive", score: { creative: 3 } },
+            { text: "Writing a paragraph or article", score: { creative: 2 } },
+            { text: "Explaining ideas in front of others", score: { social: 1 } },
+            { text: "Using a tool or app to build something", score: { tech: 1 } }
+          ]
+        },
+        {
+          id: "cre3",
+          title: "What do you want people to notice most?",
+          help: "Choose the one that matches your style.",
+          options: [
+            { text: "My creativity", score: { creative: 3 } },
+            { text: "My communication", score: { social: 2 } },
+            { text: "My ideas and originality", score: { creative: 2 } },
+            { text: "My ability to use tools smartly", score: { tech: 1, creative: 1 } }
+          ]
+        },
+        {
+          id: "cre4",
+          title: "Which career feels more exciting?",
+          help: "You do not need to choose based on pressure — go with instinct.",
+          options: [
+            { text: "Graphic Design / UI-UX", score: { creative: 3 } },
+            { text: "Journalism / Content Creation", score: { creative: 2 } },
+            { text: "Animation / Media / Advertising", score: { creative: 3 } },
+            { text: "Marketing / Branding", score: { commerce: 1, creative: 1 } }
+          ]
+        },
+        {
+          id: "cre5",
+          title: "What gives you energy?",
+          help: "This helps us judge your natural fit.",
+          options: [
+            { text: "Creating new ideas", score: { creative: 3 } },
+            { text: "Helping explain things clearly", score: { social: 1 } },
+            { text: "Working with visuals and colors", score: { creative: 3 } },
+            { text: "Using tech tools to build ideas", score: { creative: 1, tech: 1 } }
+          ]
+        }
+      ],
+      social: [
+        {
+          id: "soc1",
+          title: "Which situation feels most rewarding?",
+          help: "This helps us identify people-centered strengths.",
+          options: [
+            { text: "Teaching someone something new", score: { social: 3 } },
+            { text: "Solving a people's issue", score: { social: 3 } },
+            { text: "Organizing a group activity", score: { social: 2, commerce: 1 } },
+            { text: "Creating a campaign to help others", score: { creative: 1, social: 2 } }
+          ]
+        },
+        {
+          id: "soc2",
+          title: "What kind of work environment do you like?",
+          help: "Pick the environment that feels comfortable for you.",
+          options: [
+            { text: "Team-based and interactive", score: { social: 3 } },
+            { text: "Helping people one-to-one", score: { social: 3 } },
+            { text: "Leading and managing groups", score: { social: 2, commerce: 1 } },
+            { text: "Creative and expressive", score: { creative: 1 } }
+          ]
+        },
+        {
+          id: "soc3",
+          title: "Which career type sounds best?",
+          help: "Choose the one you feel most connected to.",
+          options: [
+            { text: "Teaching / Education", score: { social: 3 } },
+            { text: "Psychology / Counselling", score: { social: 3 } },
+            { text: "Public administration / Civil services", score: { social: 2 } },
+            { text: "Human resources / People management", score: { commerce: 1, social: 2 } }
+          ]
+        },
+        {
+          id: "soc4",
+          title: "What matters most to you in work?",
+          help: "This helps us understand your purpose.",
+          options: [
+            { text: "Helping people grow", score: { social: 3 } },
+            { text: "Creating positive change", score: { social: 2 } },
+            { text: "Working with communities", score: { social: 3 } },
+            { text: "Using communication creatively", score: { creative: 1, social: 1 } }
+          ]
+        },
+        {
+          id: "soc5",
+          title: "Which style suits you better?",
+          help: "We use this to fine-tune the recommendation.",
+          options: [
+            { text: "Listening and guiding", score: { social: 3 } },
+            { text: "Explaining and teaching", score: { social: 3 } },
+            { text: "Leading teams", score: { social: 2, commerce: 1 } },
+            { text: "Creating social awareness content", score: { creative: 1, social: 2 } }
+          ]
+        }
+      ],
+      foundation: [
+        {
+          id: "gen1",
+          title: "Which subject feels most natural to you?",
+          help: "This helps us figure out the first direction of guidance.",
+          options: [
+            { text: "Science", score: { medical: 1, tech: 1 } },
+            { text: "Math", score: { tech: 2, commerce: 1 } },
+            { text: "English / Writing", score: { creative: 1, social: 1 } },
+            { text: "Social Science", score: { social: 1, commerce: 1 } }
+          ]
+        },
+        {
+          id: "gen2",
+          title: "What kind of work do you enjoy more?",
+          help: "Choose the answer closest to your nature.",
+          options: [
+            { text: "Working with technology", score: { tech: 2 } },
+            { text: "Working with people", score: { social: 2 } },
+            { text: "Working with creative ideas", score: { creative: 2 } },
+            { text: "Working with numbers and business", score: { commerce: 2 } }
+          ]
+        },
+        {
+          id: "gen3",
+          title: "Which activity sounds most fun?",
+          help: "Your instinct matters more than perfect knowledge.",
+          options: [
+            { text: "Solving puzzles", score: { tech: 2 } },
+            { text: "Helping someone learn", score: { social: 2 } },
+            { text: "Making a poster or design", score: { creative: 2 } },
+            { text: "Managing something small like a shop", score: { commerce: 2 } }
+          ]
+        },
+        {
+          id: "gen4",
+          title: "Which stream sounds most interesting right now?",
+          help: "This is not a final decision — it only helps the quiz.",
+          options: [
+            { text: "Science (Medical)", score: { medical: 2 } },
+            { text: "Science (Non-Medical)", score: { tech: 2 } },
+            { text: "Commerce", score: { commerce: 2 } },
+            { text: "Arts", score: { creative: 2, social: 1 } }
+          ]
+        },
+        {
+          id: "gen5",
+          title: "Which statement fits you best?",
+          help: "This helps us choose the final recommendation track.",
+          options: [
+            { text: "I like solving logic problems", score: { tech: 2 } },
+            { text: "I like helping people", score: { social: 2, medical: 1 } },
+            { text: "I like creative work", score: { creative: 2 } },
+            { text: "I like business and growth", score: { commerce: 2 } }
+          ]
+        }
+      ],
+      general: [
+        {
+          id: "g1",
+          title: "What kind of work sounds most interesting?",
+          help: "Pick one option that feels closest to you.",
+          options: [
+            { text: "Technology and logic", score: { tech: 2 } },
+            { text: "Health and science", score: { medical: 2 } },
+            { text: "Business and management", score: { commerce: 2 } },
+            { text: "Creativity and communication", score: { creative: 2, social: 1 } }
+          ]
+        },
+        {
+          id: "g2",
+          title: "Which school subject do you like more?",
+          help: "This gives a quick clue about your aptitudes.",
+          options: [
+            { text: "Math / Computer", score: { tech: 2 } },
+            { text: "Biology / Chemistry", score: { medical: 2 } },
+            { text: "Economics / Business Studies", score: { commerce: 2 } },
+            { text: "English / Social Science", score: { creative: 1, social: 1 } }
+          ]
+        },
+        {
+          id: "g3",
+          title: "What kind of success feels best?",
+          help: "Choose the one you naturally care about.",
+          options: [
+            { text: "Creating something useful", score: { tech: 2 } },
+            { text: "Helping people directly", score: { social: 2, medical: 1 } },
+            { text: "Growing financially", score: { commerce: 2 } },
+            { text: "Being known for creative work", score: { creative: 2 } }
+          ]
+        },
+        {
+          id: "g4",
+          title: "Which work style fits you?",
+          help: "Your work style helps us refine the result.",
+          options: [
+            { text: "Independent and focused", score: { tech: 1, commerce: 1 } },
+            { text: "People-oriented", score: { social: 2 } },
+            { text: "Idea-driven", score: { creative: 2 } },
+            { text: "Practical and structured", score: { commerce: 1, tech: 1 } }
+          ]
+        },
+        {
+          id: "g5",
+          title: "Which future direction sounds best?",
+          help: "We use this to finalize the strongest recommendation.",
+          options: [
+            { text: "Engineering / Tech", score: { tech: 2 } },
+            { text: "Medicine / Health", score: { medical: 2 } },
+            { text: "Commerce / Business", score: { commerce: 2 } },
+            { text: "Design / Media / Arts", score: { creative: 2 } }
+          ]
+        }
+      ]
+    };
+
+    const questions = questionBanks[path] || questionBanks.general;
+    const totalQuestions = questions.length;
+
+    const state = {
+      index: 0,
+      answers: {},
+      selected: null,
+      scores: { tech: 0, medical: 0, commerce: 0, creative: 0, social: 0 },
+      completed: false
+    };
+
+    function summarizeProfileText(p) {
+      const classLevel = p.classLevel || "Not set";
+      const stream = p.stream || "Not set";
+      const interests = Array.isArray(p.interests) ? p.interests.slice(0, 2).join(", ") || "Not set" : "Not set";
+      const strengths = Array.isArray(p.strengths) ? p.strengths.slice(0, 2).join(", ") || "Not set" : "Not set";
+      const goal = p.goal || "Not set";
+      return `Class: ${classLevel} • Stream: ${stream} • Interests: ${interests} • Strengths: ${strengths} • Goal: ${goal}`;
+    }
+
+    function renderMeta() {
+      const current = questions[state.index];
+      ui.stepPill.textContent = `Question ${Math.min(state.index + 1, totalQuestions)} of ${totalQuestions}`;
+      ui.progressFill.style.width = `${Math.round((state.index / totalQuestions) * 100)}%`;
+      ui.progressText.textContent = `${Math.round((state.index / totalQuestions) * 100)}%`;
+      ui.questionHint.textContent = "Pick one option";
+      ui.trackMeta.textContent = `Track: ${resultLabels[path]?.title || "General"}`;
+      ui.difficultyMeta.textContent = "Level: Personalised";
+      ui.questionTitle.textContent = current.title;
+      ui.questionHelp.textContent = current.help || "";
+      ui.sectionMeta.textContent = "Assessment-based Quiz";
+      ui.formTitle.textContent = resultLabels[path]?.title || "Balanced Career Exploration";
+      ui.formDesc.textContent = `Based on the student profile, we selected a ${path === "general" ? "mixed" : path} quiz to refine career guidance.`;
+      ui.backBtn.disabled = state.index === 0;
+      ui.nextBtn.disabled = state.selected === null;
+      ui.analysisBox.classList.remove("show");
+      ui.analysisBox.textContent = "";
+    }
+
+    function renderQuestion() {
+      const current = questions[state.index];
+      ui.questionArea.innerHTML = "";
+
+      const optionsWrap = document.createElement("div");
+      optionsWrap.className = "options";
+
+      current.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "option-btn";
+        btn.textContent = opt.text;
+        if (state.selected === idx) btn.classList.add("selected");
+
+        btn.addEventListener("click", () => {
+          state.selected = idx;
+          renderQuestion();
+          ui.nextBtn.disabled = false;
+        });
+
+        optionsWrap.appendChild(btn);
+      });
+
+      ui.questionArea.appendChild(optionsWrap);
+      renderMeta();
+    }
+
+    function mergeScores(target, add) {
+      Object.entries(add || {}).forEach(([k, v]) => {
+        if (!(k in target)) target[k] = 0;
+        target[k] += Number(v) || 0;
+      });
+    }
+
+    function pickTopScores(scores) {
+      return Object.entries(scores)
+        .sort((a, b) => b[1] - a[1])
+        .filter(([, value]) => value > 0)
+        .slice(0, 3)
+        .map(([key, value]) => ({ key, value }));
+    }
+
+    function buildRecommendations(topKeys) {
+      return topKeys.map(item => {
+        const data = resultLabels[item.key] || resultLabels.general;
+        return {
+          track: data.title,
+          careers: data.careers,
+          note: data.note,
+          score: item.value
+        };
+      });
+    }
+
+    function finishQuiz() {
+      state.completed = true;
+      ui.questionShell.classList.add("hidden");
+      ui.resultBox.classList.add("show");
+      ui.progressFill.style.width = "100%";
+      ui.progressText.textContent = "100%";
+
+      const top = pickTopScores(state.scores);
+      const recommendations = buildRecommendations(top.length ? top : [{ key: path === "general" ? "general" : path, value: 1 }]);
+      const primary = recommendations[0];
+
+      const quizResult = {
+        primaryPath: top[0]?.key || path,
+        pathUsed: path,
+        scores: state.scores,
+        topRecommendations: recommendations,
+        completedAt: new Date().toISOString()
+      };
+
+      localStorage.setItem(STORAGE_QUIZ_KEY, JSON.stringify(quizResult));
+
+      ui.resultSummary.textContent = primary
+        ? `Based on the quiz, the strongest match is ${primary.track}. ${primary.note}`
+        : "Your quiz has been saved and will be used in the next counselling step.";
+
+      ui.resultGrid.innerHTML = recommendations.map(rec => `
+        <div class="result-card">
+          <h4>${rec.track}</h4>
+          <p><strong>Careers:</strong> ${rec.careers}</p>
+          <p style="margin-top:8px;"><strong>Why:</strong> ${rec.note}</p>
+        </div>
+      `).join("");
+
+      setTimeout(() => {
+        window.location.href = "chat.html";
+      }, 1600);
+    }
+
+    function nextStep() {
+      const current = questions[state.index];
+      const selectedOption = current.options[state.selected];
+      if (!selectedOption) return;
+
+      state.answers[current.id] = selectedOption.text;
+      mergeScores(state.scores, selectedOption.score);
+      ui.analysisBox.textContent = `You chose: ${selectedOption.text}. This has been added to the student profile for better counselling.`;
+      ui.analysisBox.classList.add("show");
+
+      if (state.index < totalQuestions - 1) {
+        state.index += 1;
+        state.selected = null;
+        renderQuestion();
+        ui.nextBtn.disabled = true;
+        return;
+      }
+
+      finishQuiz();
+    }
+
+    function prevStep() {
+      if (state.index === 0) return;
+
+      const current = questions[state.index];
+      const prev = questions[state.index - 1];
+
+      const currentPicked = state.answers[current.id];
+      if (currentPicked) {
+        // rewind score for current answer
+        const option = current.options.find(opt => opt.text === currentPicked);
+        if (option) {
+          Object.entries(option.score || {}).forEach(([k, v]) => {
+            state.scores[k] = Math.max(0, (state.scores[k] || 0) - (Number(v) || 0));
+          });
+        }
+      }
+
+      state.index -= 1;
+      state.selected = prev.options.findIndex(opt => opt.text === state.answers[prev.id]);
+      if (state.selected < 0) state.selected = null;
+      renderQuestion();
+      ui.nextBtn.disabled = state.selected === null;
+    }
+
+    ui.nextBtn.addEventListener("click", nextStep);
+    ui.backBtn.addEventListener("click", prevStep);
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !ui.nextBtn.disabled) {
+        const tag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
+        if (tag !== "textarea" && tag !== "input") {
+          e.preventDefault();
+          nextStep();
+        }
+      }
+    });
+
+    // Initial render
+    ui.resultBox.classList.remove("show");
+    ui.warningBox.classList.remove("show");
+    ui.warningBox.textContent = "";
+    ui.formTitle.textContent = resultLabels[path]?.title || "Balanced Career Exploration";
+    ui.formDesc.textContent = `We detected the ${path} path from the assessment and selected the most relevant questions.`;
+    ui.sectionMeta.textContent = "Personalized Quiz";
+    ui.progressFill.style.width = "0%";
+    ui.progressText.textContent = "0%";
+    ui.contextBox.querySelectorAll && null;
+    ui.contextBox.setAttribute("aria-label", "Student context summary");
+    ui.questionShell.classList.remove("hidden");
+    ui.resultBox.classList.remove("hidden");
+
+    const contextTitle = summarizeProfileText(profile);
+    const note = document.createElement("div");
+    note.className = "context-card";
+    note.style.gridColumn = "1 / -1";
+    note.innerHTML = `<span>Student profile used</span><strong>${contextTitle}</strong>`;
+    ui.contextBox.prepend(note);
+
+    renderQuestion();
+  </script>
+</body>
+</html>

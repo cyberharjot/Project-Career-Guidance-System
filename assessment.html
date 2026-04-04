@@ -14,6 +14,7 @@
       --muted: #aab3d6;
       --accent: #7c5cff;
       --accent-2: #22c55e;
+      --accent-3: #38bdf8;
       --shadow: 0 22px 80px rgba(0, 0, 0, 0.38);
       --radius-xl: 28px;
       --radius-lg: 20px;
@@ -366,6 +367,66 @@
       font-size: 0.95rem;
     }
 
+    .next-steps {
+      display: none;
+      margin-top: 16px;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 20px;
+    }
+
+    .next-steps.show {
+      display: block;
+    }
+
+    .next-steps h3 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+    }
+
+    .next-steps p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 0.95rem;
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .choice-card {
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(2, 6, 23, 0.35);
+      padding: 16px;
+      text-align: left;
+      display: grid;
+      gap: 8px;
+      transition: transform var(--transition), border-color var(--transition), background var(--transition);
+    }
+
+    .choice-card:hover,
+    .choice-card:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba(124, 92, 255, 0.45);
+      background: rgba(124, 92, 255, 0.08);
+      outline: none;
+    }
+
+    .choice-card strong {
+      font-size: 1rem;
+    }
+
+    .choice-card span {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
     .hidden {
       display: none !important;
     }
@@ -378,6 +439,7 @@
       .actions { flex-direction: column-reverse; }
       .btn { width: 100%; }
       .progress-wrap { margin-top: 16px; }
+      .choice-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -389,7 +451,7 @@
         <h1>Let’s understand the student first.</h1>
         <p>
           This short assessment collects school-level context such as class, subjects, interests, strengths, and goals.
-          The answers are stored and sent to the chat flow later so AI can give more relevant career guidance.
+          The answers are stored and used later so AI can give more relevant career guidance.
         </p>
       </header>
 
@@ -430,7 +492,24 @@
 
         <div class="summary" id="summaryBox">
           <h3>Profile saved</h3>
-          <p>Your assessment data is saved locally and the page will open chat automatically.</p>
+          <p>Your assessment data has been saved locally. Choose the next step below.</p>
+        </div>
+
+        <div class="next-steps" id="nextStepsBox">
+          <h3>What would you like to do next?</h3>
+          <p>You can take a personalized quiz first, or go straight to the chatbot for career guidance.</p>
+
+          <div class="choice-grid">
+            <button class="choice-card" id="goQuizBtn" type="button">
+              <strong>Take Personalized Quiz</strong>
+              <span>Answer a short quiz based on your assessment to refine your career match.</span>
+            </button>
+
+            <button class="choice-card" id="goChatBtn" type="button">
+              <strong>Talk to Chatbot Directly</strong>
+              <span>Skip the quiz and move straight to AI counselling with your assessment profile.</span>
+            </button>
+          </div>
         </div>
       </section>
     </div>
@@ -552,7 +631,10 @@
       backBtn: document.getElementById("backBtn"),
       nextBtn: document.getElementById("nextBtn"),
       questionShell: document.getElementById("questionShell"),
-      summaryBox: document.getElementById("summaryBox")
+      summaryBox: document.getElementById("summaryBox"),
+      nextStepsBox: document.getElementById("nextStepsBox"),
+      goQuizBtn: document.getElementById("goQuizBtn"),
+      goChatBtn: document.getElementById("goChatBtn")
     };
 
     function getCurrentQuestion() {
@@ -562,7 +644,7 @@
     function getProgressPercent() {
       const total = state.questions.length;
       if (total <= 1) return 0;
-      return Math.round((state.index / (total)) * 100);
+      return Math.round((state.index / total) * 100);
     }
 
     function updateProgress() {
@@ -712,6 +794,32 @@
       }
     }
 
+    function finishAssessment() {
+      saveCurrentAnswer();
+
+      const profile = {
+        classLevel: state.answers.classLevel || null,
+        stream: state.answers.stream || null,
+        subjects: state.answers.subjects || [],
+        interests: state.answers.interests || [],
+        strengths: state.answers.strengths || [],
+        priority: state.answers.priority || null,
+        goal: state.answers.goal || null,
+        assessmentFlow: state.flow,
+        assessmentCompletedAt: new Date().toISOString()
+      };
+
+      localStorage.setItem("studentProfile", JSON.stringify(profile));
+      localStorage.setItem("futurepathAssessmentComplete", "true");
+
+      ui.progressFill.style.width = "100%";
+      ui.progressText.textContent = "100%";
+
+      ui.questionShell.classList.add("hidden");
+      ui.summaryBox.classList.add("show");
+      ui.nextStepsBox.classList.add("show");
+    }
+
     function nextStep() {
       saveCurrentAnswer();
 
@@ -749,35 +857,15 @@
       renderQuestion();
     }
 
-    function finishAssessment() {
-  saveCurrentAnswer();
+    ui.goQuizBtn.addEventListener("click", () => {
+      localStorage.setItem("assessmentNextStep", "quiz");
+      window.location.href = "quiz.html";
+    });
 
-  const profile = {
-    classLevel: state.answers.classLevel || null,
-    stream: state.answers.stream || null,
-    subjects: state.answers.subjects || [],
-    interests: state.answers.interests || [],
-    strengths: state.answers.strengths || [],
-    priority: state.answers.priority || null,
-    goal: state.answers.goal || null,
-    assessmentFlow: state.flow,
-    assessmentCompletedAt: new Date().toISOString()
-  };
-
-  localStorage.setItem("studentProfile", JSON.stringify(profile));
-  localStorage.setItem("futurepathAssessmentComplete", "true");
-
-  // ✅ ADD THIS (progress fix)
-  ui.progressFill.style.width = "100%";
-  ui.progressText.textContent = "100%";
-
-  ui.questionShell.classList.add("hidden");
-  ui.summaryBox.classList.add("show");
-
-  setTimeout(() => {
-    window.location.href = "chat.html";
-  }, 1200);
-}
+    ui.goChatBtn.addEventListener("click", () => {
+      localStorage.setItem("assessmentNextStep", "chat");
+      window.location.href = "chat.html";
+    });
 
     ui.nextBtn.addEventListener("click", nextStep);
     ui.backBtn.addEventListener("click", previousStep);
@@ -799,5 +887,3 @@
 
     renderQuestion();
   </script>
-</body>
-</html>
