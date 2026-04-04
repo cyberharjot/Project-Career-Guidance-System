@@ -11,6 +11,7 @@ const emptyState = document.getElementById("emptyState");
 const input = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendBtn");
 const clearBtn = document.getElementById("clearChat");
+const toolsBtn = document.getElementById("toolsBtn");
 const quickChips = document.querySelectorAll(".quick-chip");
 
 const STORAGE_KEY = "fpa_chats_v1";
@@ -19,15 +20,8 @@ const USER_ID_KEY = "fpa_user_id_v1";
 const STUDENT_PROFILE_KEY = "studentProfile";
 const QUIZ_RESULT_KEY = "quizResult";
 
-// Local and live both work:
-// - file:// or localhost -> local Flask
-// - deployed site -> Render backend
-const API_BASE_URL =
-    window.location.protocol === "file:" ||
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1"
-        ? "http://127.0.0.1:5000"
-        : "https://futurepath-ai-k0e1.onrender.com";
+// Same backend AI for chat and tools
+const API_BASE_URL = "https://futurepath-ai-k0e1.onrender.com";
 
 const isMobile = () => window.matchMedia("(max-width: 900px)").matches;
 
@@ -198,6 +192,12 @@ function toggleSidebar() {
 openSidebarBtn.addEventListener("click", toggleSidebar);
 closeSidebarBtn.addEventListener("click", closeSidebar);
 backdrop.addEventListener("click", closeSidebar);
+
+if (toolsBtn) {
+    toolsBtn.addEventListener("click", () => {
+        window.location.href = "tools.html";
+    });
+}
 
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {

@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#070b17" />
+  <title>FuturePath AI | Career Tools</title>
+  <style>
+    :root {
+      --bg: #070b17;
+      --panel: rgba(15, 20, 40, 0.82);
+      --panel-2: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.09);
+      --text: #edf1ff;
+      --muted: #aab3d6;
+      --accent: #7c5cff;
+      --accent-2: #22c55e;
+      --accent-3: #38bdf8;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --shadow: 0 22px 80px rgba(0, 0, 0, 0.38);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --transition: 200ms ease;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(124, 92, 255, 0.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(56, 189, 248, 0.10), transparent 24%),
+        linear-gradient(180deg, #050714 0%, #070b17 100%);
+      color: var(--text);
+    }
+
+    body { overflow-x: hidden; }
+
+    .page {
+      min-height: 100vh;
+      padding: 24px;
+      display: grid;
+      place-items: center;
+    }
+
+    .container { width: min(1180px, 100%); }
+
+    .hero {
+      margin-bottom: 18px;
+      padding: 18px 6px 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(124, 92, 255, 0.14);
+      color: #ddd6ff;
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .badge .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 7px rgba(124, 92, 255, 0.14);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p {
+      margin: 12px 0 0;
+      max-width: 78ch;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 1rem;
+    }
+
+    .profile-bar {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 14px;
+      margin: 22px 0;
+    }
+
+    .profile-card {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .profile-card h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+    }
+
+    .profile-card p,
+    .profile-card li {
+      color: var(--muted);
+      line-height: 1.65;
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    .profile-list {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .tab-btn {
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 14px 14px;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+      transition: transform var(--transition), background var(--transition), border-color var(--transition);
+    }
+
+    .tab-btn:hover,
+    .tab-btn:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(124,92,255,0.5);
+      background: rgba(124,92,255,0.10);
+      outline: none;
+    }
+
+    .tab-btn.active {
+      background: rgba(124,92,255,0.18);
+      border-color: rgba(124,92,255,0.8);
+      box-shadow: inset 0 0 0 1px rgba(124,92,255,0.1);
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.25rem, 2vw, 1.7rem);
+      letter-spacing: -0.03em;
+    }
+
+    .card p.lead {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      font-size: 0.92rem;
+      color: #dce3ff;
+      font-weight: 600;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(8, 12, 28, 0.68);
+      color: var(--text);
+      padding: 14px 16px;
+      font: inherit;
+      outline: none;
+      transition: border-color var(--transition), background var(--transition);
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: rgba(124,92,255,0.75);
+      background: rgba(10, 16, 36, 0.84);
+    }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 110px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform var(--transition), opacity var(--transition), background var(--transition);
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #9f7bff);
+      color: white;
+      box-shadow: 0 14px 30px rgba(124, 92, 255, 0.25);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .output {
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 18px;
+      min-height: 240px;
+      line-height: 1.7;
+      color: var(--text);
+      white-space: pre-wrap;
+    }
+
+    .output.muted { color: var(--muted); }
+
+    .score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(124, 92, 255, 0.14);
+      color: #ddd6ff;
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
+    .result-card {
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(2, 6, 23, 0.35);
+      padding: 16px;
+    }
+
+    .result-card h4 {
+      margin: 0 0 8px;
+      font-size: 0.98rem;
+    }
+
+    .result-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.92rem;
+    }
+
+    .big-result {
+      margin-top: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(124,92,255,0.22);
+      background: rgba(124,92,255,0.08);
+      padding: 16px;
+    }
+
+    .big-result strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .risk-meter {
+      margin-top: 12px;
+      border-radius: 999px;
+      height: 16px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .risk-fill {
+      height: 100%;
+      width: 0%;
+      transition: width 300ms ease;
+      background: linear-gradient(90deg, #22c55e, #f59e0b, #ef4444);
+    }
+
+    .small-note {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 10px;
+      line-height: 1.6;
+    }
+
+    .section { display: none; }
+    .section.active { display: grid; }
+    .full-span { grid-column: 1 / -1; }
+
+    .loader-line {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-top: 10px;
+    }
+
+    .footer {
+      padding: 24px 6px 8px;
+      text-align: center;
+      color: rgba(148,163,184,0.92);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 980px) {
+      .profile-bar,
+      .tool-grid,
+      .tabs {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page { padding: 14px; }
+      .card { padding: 18px; border-radius: 22px; }
+      .button-row { flex-direction: column; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="container">
+      <header class="hero">
+        <div class="badge"><span class="dot"></span> FuturePath AI Career Tools</div>
+        <h1>Decision tools for students who want more than suggestions.</h1>
+        <p>
+          Use these tools to compare career paths, check career fit, understand career reality, and estimate risk —
+          all powered by the same AI that runs your chatbot.
+        </p>
+      </header>
+
+      <section class="profile-bar">
+        <div class="profile-card">
+          <h3>Student Profile</h3>
+          <p id="profileSummary">Loading profile...</p>
+        </div>
+        <div class="profile-card">
+          <h3>How this page works</h3>
+          <ul class="profile-list">
+            <li>Reads your saved assessment and quiz data from localStorage</li>
+            <li>Sends a structured request to the same AI backend used by chat</li>
+            <li>Shows compare, fit, reality, and risk outputs in a clean dashboard</li>
+          </ul>
+        </div>
+      </section>
+
+      <div class="tabs" role="tablist" aria-label="Career tools">
+        <button class="tab-btn active" data-tab="compare" type="button">Compare Careers</button>
+        <button class="tab-btn" data-tab="fit" type="button">Career Fit Analyzer</button>
+        <button class="tab-btn" data-tab="reality" type="button">Career Reality</button>
+        <button class="tab-btn" data-tab="risk" type="button">Career Risk Meter</button>
+      </div>
+
+      <section class="tool-grid">
+        <!-- COMPARE -->
+        <article class="card section active" id="compareSection">
+          <div class="full-span">
+            <h2>Compare Two Career Paths</h2>
+            <p class="lead">Compare two careers based on the student’s profile and get a decision-friendly answer from AI.</p>
+          </div>
+
+          <div class="field">
+            <label for="careerA">Career 1</label>
+            <input id="careerA" type="text" placeholder="e.g. Doctor" />
+          </div>
+          <div class="field">
+            <label for="careerB">Career 2</label>
+            <input id="careerB" type="text" placeholder="e.g. Software Engineer" />
+          </div>
+
+          <div class="button-row full-span">
+            <button class="btn btn-primary" id="compareBtn" type="button">Compare with AI</button>
+            <button class="btn btn-secondary" id="compareExampleBtn" type="button">Use Example</button>
+          </div>
+
+          <div class="output full-span muted" id="compareOutput">Enter two career paths to compare them.</div>
+        </article>
+
+        <!-- FIT ANALYZER -->
+        <article class="card section" id="fitSection">
+          <div class="full-span">
+            <h2>Career Fit Analyzer</h2>
+            <p class="lead">Check how well a career matches the student profile and where the gap may be.</p>
+          </div>
+
+          <div class="field full-span">
+            <label for="fitCareer">Career to analyze</label>
+            <input id="fitCareer" type="text" placeholder="e.g. Chartered Accountant" />
+          </div>
+
+          <div class="button-row full-span">
+            <button class="btn btn-primary" id="fitBtn" type="button">Analyze with AI</button>
+            <button class="btn btn-secondary" id="fitExampleBtn" type="button">Use Example</button>
+          </div>
+
+          <div class="output full-span muted" id="fitOutput">Enter a career to see the fit analysis.</div>
+        </article>
+
+        <!-- REALITY -->
+        <article class="card section" id="realitySection">
+          <div class="full-span">
+            <h2>Career Reality</h2>
+            <p class="lead">See the real-world side of a career — demand, effort, salary, and challenges.</p>
+          </div>
+
+          <div class="field full-span">
+            <label for="realityCareer">Career to check</label>
+            <input id="realityCareer" type="text" placeholder="e.g. Data Scientist" />
+          </div>
+
+          <div class="button-row full-span">
+            <button class="btn btn-primary" id="realityBtn" type="button">Show reality</button>
+            <button class="btn btn-secondary" id="realityExampleBtn" type="button">Use Example</button>
+          </div>
+
+          <div class="output full-span muted" id="realityOutput">Enter a career to understand its reality.</div>
+        </article>
+
+        <!-- RISK -->
+        <article class="card section" id="riskSection">
+          <div class="full-span">
+            <h2>Career Risk Meter</h2>
+            <p class="lead">Estimate how risky a career is for the current student profile. Higher risk means more preparation is needed.</p>
+          </div>
+
+          <div class="field full-span">
+            <label for="riskCareer">Career to assess</label>
+            <input id="riskCareer" type="text" placeholder="e.g. Pilot" />
+          </div>
+
+          <div class="button-row full-span">
+            <button class="btn btn-primary" id="riskBtn" type="button">Check risk</button>
+            <button class="btn btn-secondary" id="riskExampleBtn" type="button">Use Example</button>
+          </div>
+
+          <div class="output full-span muted" id="riskOutput">Enter a career to estimate the risk level.</div>
+          <div class="risk-meter full-span" aria-hidden="true"><div class="risk-fill" id="riskFill"></div></div>
+          <div class="small-note full-span" id="riskNote">Risk score will appear here after analysis.</div>
+        </article>
+      </section>
+
+      <div class="footer">FuturePath AI • Career decision tools for school students</div>
+    </div>
+  </main>
+
+  <script>
+    const STORAGE_PROFILE_KEY = "studentProfile";
+    const STORAGE_QUIZ_KEY = "quizResult";
+
+    const API_BASE_URL = "https://futurepath-ai-k0e1.onrender.com";
+
+    const profile = (() => {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_PROFILE_KEY) || "null");
+      } catch {
+        return null;
+      }
+    })();
+
+    const quiz = (() => {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_QUIZ_KEY) || "null");
+      } catch {
+        return null;
+      }
+    })();
+
+    const profileSummaryEl = document.getElementById("profileSummary");
+    const tabs = [...document.querySelectorAll(".tab-btn")];
+    const sections = {
+      compare: document.getElementById("compareSection"),
+      fit: document.getElementById("fitSection"),
+      reality: document.getElementById("realitySection"),
+      risk: document.getElementById("riskSection")
+    };
+
+    const compareA = document.getElementById("careerA");
+    const compareB = document.getElementById("careerB");
+    const compareBtn = document.getElementById("compareBtn");
+    const compareExampleBtn = document.getElementById("compareExampleBtn");
+    const compareOutput = document.getElementById("compareOutput");
+
+    const fitCareer = document.getElementById("fitCareer");
+    const fitBtn = document.getElementById("fitBtn");
+    const fitExampleBtn = document.getElementById("fitExampleBtn");
+    const fitOutput = document.getElementById("fitOutput");
+
+    const realityCareer = document.getElementById("realityCareer");
+    const realityBtn = document.getElementById("realityBtn");
+    const realityExampleBtn = document.getElementById("realityExampleBtn");
+    const realityOutput = document.getElementById("realityOutput");
+
+    const riskCareer = document.getElementById("riskCareer");
+    const riskBtn = document.getElementById("riskBtn");
+    const riskExampleBtn = document.getElementById("riskExampleBtn");
+    const riskOutput = document.getElementById("riskOutput");
+    const riskFill = document.getElementById("riskFill");
+    const riskNote = document.getElementById("riskNote");
+
+    const safeText = (value) => String(value || "").trim();
+    const lower = (value) => safeText(value).toLowerCase();
+
+    function profileText() {
+      if (!profile) return "No profile found yet. Complete assessment and quiz first.";
+      const parts = [];
+      if (profile.classLevel) parts.push(`Class: ${profile.classLevel}`);
+      if (profile.stream) parts.push(`Stream: ${profile.stream}`);
+      if (Array.isArray(profile.interests) && profile.interests.length) parts.push(`Interests: ${profile.interests.slice(0, 3).join(", ")}`);
+      if (Array.isArray(profile.subjects) && profile.subjects.length) parts.push(`Subjects: ${profile.subjects.slice(0, 3).join(", ")}`);
+      if (profile.goal) parts.push(`Goal: ${profile.goal}`);
+      if (quiz && Array.isArray(quiz.topRecommendations) && quiz.topRecommendations.length) {
+        parts.push(`Quiz top path: ${quiz.topRecommendations[0].track}`);
+      }
+      return parts.join(" • ") || "Profile exists, but it is empty.";
+    }
+
+    profileSummaryEl.textContent = profileText();
+
+    function setActiveTab(tab) {
+      tabs.forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tab));
+      Object.entries(sections).forEach(([key, section]) => section.classList.toggle("active", key === tab));
+    }
+
+    tabs.forEach(btn => btn.addEventListener("click", () => setActiveTab(btn.dataset.tab)));
+
+    function buildPrompt(toolType, payload) {
+      const baseContext = `
+Student profile:
+${profileText()}
+
+Quiz result:
+${quiz ? JSON.stringify(quiz, null, 2) : "No quiz result found."}
+`.trim();
+
+      if (toolType === "compare") {
+        return `You are FuturePath AI. Compare these two careers for the student using the given profile and quiz result.
+
+Rules:
+- Give a structured comparison.
+- Include: Education time, Difficulty, Cost, Salary, Work-life balance, Real-world challenge, Final verdict.
+- Clearly say which career is better for the student and why.
+- Mention why the other career is less suitable.
+- Keep the answer school-student friendly and honest.
+
+Career 1: ${payload.careerA}
+Career 2: ${payload.careerB}
+
+${baseContext}`;
+      }
+
+      if (toolType === "fit") {
+        return `You are FuturePath AI. Analyze how well this career fits the student.
+
+Rules:
+- Give a fit score from 0 to 100.
+- Explain why it fits.
+- Explain possible skill gaps or mismatch.
+- Give a final recommendation: strong fit / moderate fit / low fit.
+- Be honest and practical.
+
+Career: ${payload.career}
+
+${baseContext}`;
+      }
+
+      if (toolType === "reality") {
+        return `You are FuturePath AI. Explain the real-world reality of this career for a school student.
+
+Rules:
+- Cover: demand, salary reality, competition, effort required, and challenges.
+- Be realistic, not sugar-coated.
+- Mention whether the career is growing, stable, or highly competitive.
+- End with practical advice.
+
+Career: ${payload.career}
+
+${baseContext}`;
+      }
+
+      if (toolType === "risk") {
+        return `You are FuturePath AI. Estimate the career risk for this student.
+
+Rules:
+- Give a risk score from 0 to 100.
+- Classify it as Low / Medium / High risk.
+- Explain the main risk factors.
+- Explain what the student should do to reduce the risk.
+- Keep it honest and actionable.
+
+Career: ${payload.career}
+
+${baseContext}`;
+      }
+
+      return `${payload.career || ""}\n\n${baseContext}`;
+    }
+
+    async function askAI(toolType, payload, outputEl) {
+      outputEl.classList.remove("muted");
+      outputEl.textContent = "Analyzing with AI...";
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/chat`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            user_id: "career_tools_user",
+            message: buildPrompt(toolType, payload),
+            history: [],
+            profile,
+            quiz
+          })
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data?.error || "Request failed");
+        }
+
+        outputEl.textContent = data.reply || "No response received from AI.";
+      } catch (err) {
+        outputEl.classList.add("muted");
+        outputEl.textContent = `Unable to reach the AI backend. Make sure Flask is running locally, or use the deployed site.\n\n${err.message || err}`;
+      }
+    }
+
+    compareBtn.addEventListener("click", () => {
+      const a = safeText(compareA.value);
+      const b = safeText(compareB.value);
+      if (!a || !b) {
+        compareOutput.classList.add("muted");
+        compareOutput.textContent = "Please enter two careers to compare.";
+        return;
+      }
+      askAI("compare", { careerA: a, careerB: b }, compareOutput);
+    });
+
+    compareExampleBtn.addEventListener("click", () => {
+      compareA.value = "Doctor";
+      compareB.value = "Software Engineer";
+      askAI("compare", { careerA: compareA.value, careerB: compareB.value }, compareOutput);
+    });
+
+    fitBtn.addEventListener("click", () => {
+      const career = safeText(fitCareer.value);
+      if (!career) {
+        fitOutput.classList.add("muted");
+        fitOutput.textContent = "Please enter a career to analyze.";
+        return;
+      }
+      askAI("fit", { career }, fitOutput);
+    });
+
+    fitExampleBtn.addEventListener("click", () => {
+      fitCareer.value = "Chartered Accountant";
+      askAI("fit", { career: fitCareer.value }, fitOutput);
+    });
+
+    realityBtn.addEventListener("click", () => {
+      const career = safeText(realityCareer.value);
+      if (!career) {
+        realityOutput.classList.add("muted");
+        realityOutput.textContent = "Please enter a career to understand its reality.";
+        return;
+      }
+      askAI("reality", { career }, realityOutput);
+    });
+
+    realityExampleBtn.addEventListener("click", () => {
+      realityCareer.value = "Data Scientist";
+      askAI("reality", { career: realityCareer.value }, realityOutput);
+    });
+
+    riskBtn.addEventListener("click", async () => {
+      const career = safeText(riskCareer.value);
+      if (!career) {
+        riskOutput.classList.add("muted");
+        riskOutput.textContent = "Please enter a career to estimate the risk.";
+        riskFill.style.width = "0%";
+        riskNote.textContent = "Risk score will appear here after analysis.";
+        return;
+      }
+      await askAI("risk", { career }, riskOutput);
+
+      const text = riskOutput.textContent || "";
+      const match = text.match(/(?:Risk score|score)\D*(\d{1,3})/i);
+      const score = match ? Math.max(0, Math.min(100, parseInt(match[1], 10))) : 0;
+      riskFill.style.width = `${score}%`;
+      riskNote.textContent = score >= 70
+        ? "High risk means the career needs stronger preparation and a backup plan."
+        : score >= 40
+          ? "Medium risk means the path is possible, but preparation matters a lot."
+          : "Low risk means the current profile looks relatively aligned with this career.";
+    });
+
+    riskExampleBtn.addEventListener("click", async () => {
+      riskCareer.value = "Pilot";
+      await riskBtn.click();
+    });
+
+    // Optional demo hints
+    if (profile?.goal) {
+      fitCareer.placeholder = `e.g. ${profile.goal}`;
+      realityCareer.placeholder = `e.g. ${profile.goal}`;
+      riskCareer.placeholder = `e.g. ${profile.goal}`;
+    }
+
+    if (quiz?.topRecommendations?.length) {
+      const top = quiz.topRecommendations[0]?.track || "";
+      compareOutput.textContent = `Tip: You can compare a career from the quiz output with another option. Top quiz path: ${top}`;
+    }
+  </script>
+</body>
+</html>
